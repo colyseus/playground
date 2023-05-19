@@ -2,12 +2,7 @@ import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
 
 import { InspectConnection } from "../components/InspectConnection";
-
-type Connection = Room & {
-	error?: any;
-	messages?: any[];
-	events?: any[];
-};
+import { Connection } from "../utils/Types";
 
 const methods: {[key: string]: string} = {
 	"joinOrCreate": "Join or Create",
@@ -41,11 +36,14 @@ export function Welcome() {
 	const createClientConnection = async () => {
 		try {
 			const connection = (await client[selectedMethod](selectedRoomName, JSON.parse(options))) as Connection;
+			connection.messages = [];
 
 			connection.onMessage("__playground_message_types", (types) =>
 				setRoomMessageTypes(types));
 
-			connection.onMessage("*", (type, message) => console.log(type, message));
+			connection.onMessage("*", (type, message) => {
+				connection.messages.push({ type, message, in: true });
+			});
 			connection.onLeave(() => { });
 			connection.onError((code, message) => { });
 
@@ -152,9 +150,14 @@ export function Welcome() {
 			<div className="bg-white rounded p-6">
 				<h2 className="text-xl font-semibold">Inspect connection</h2>
 				{(selectedConnection)
-					? <InspectConnection connection={selectedConnection} messageTypes={roomMessageTypes} />
+					? <InspectConnection
+							client={client}
+							connection={selectedConnection}
+							messageTypes={roomMessageTypes}
+						/>
 					: <p><em>(Please select an active client connection)</em></p>}
 			</div>
+
 		</div>
 	</>;
 }
