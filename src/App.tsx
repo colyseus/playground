@@ -47,10 +47,10 @@ export default function App() {
         {/* Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
 
-          <div className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div className="flex-1 overflow-y-auto bg-gray-100">
             <div className="container mx-auto p-8">
 
-              <img src="https://github.com/colyseus/colyseus/blob/master/media/header.png?raw=1" alt="" className="w-36 m-auto mt-6" />
+              <img src="https://github.com/colyseus/colyseus/blob/master/media/header.png?raw=1" alt="" className="w-48 m-auto mt-6" />
 
               <Routes>
                 {routes.map((route, index) => (
