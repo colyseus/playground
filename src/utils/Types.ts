@@ -26,7 +26,6 @@ export const allRoomColors: string[] = [
   // "lime",
   // "indigo",
   // "teal",
-
 ];
 // ,"stone", "amber", "yellow", "purple"
 
