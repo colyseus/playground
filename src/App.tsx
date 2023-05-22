@@ -4,19 +4,17 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 
 import { Home } from './sections/Home';
-import { Welcome } from './sections/Welcome';
+import { Playground } from './sections/Playground';
 
 const routes = [
   {
     path: "/",
-    sidebar:  () => <div>playground...</div>,
-    component: <Home />
+    component: <Playground />
   },
-  {
-    path: "/welcome",
-    sidebar: () => <div>welcome...</div>,
-    component: <Welcome />
-  },
+  // {
+  //   path: "/welcome",
+  //   component: <Home />
+  // },
 ];
 
 export default function App() {
@@ -45,7 +43,7 @@ export default function App() {
         */}
 
         {/* Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col">
 
           <div className="flex-1 overflow-y-auto bg-gray-100">
             <div className="container mx-auto p-8">
