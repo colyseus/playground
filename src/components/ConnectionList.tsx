@@ -1,6 +1,6 @@
 import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
-import { Connection, roomsBySessionId } from "../utils/Types";
+import { Connection, allRoomColors, getRoomColor, roomsBySessionId } from "../utils/Types";
 
 function ConnectionItem({
 	connection,
@@ -39,7 +39,7 @@ function ConnectionItem({
 
 				<span className="ml-2 bg-orange-500 p-1 rounded text-white font-semibold">{room.name}</span>
 				<code className="ml-2 bg-gray-100 p-1 rounded">sessionId: {connection.sessionId}</code>
-				<code className="ml-2 bg-gray-100 p-1 rounded">roomId: {room.roomId}</code>
+				<code className={"bg-" + getRoomColor(room.roomId) + "-800" + " text-white ml-2 p-1 rounded"}>roomId: {room.roomId}</code>
 			</>}
 
 	</div>
@@ -64,6 +64,9 @@ export function ConnectionList({
 	return (
 		<div className="bg-white rounded p-6">
 			<h2 className="text-xl font-semibold mb-2">Client connections</h2>
+
+			{/* Workaround to emit CSS for all available colors */}
+			<span className="bg-lime-800 bg-green-800 bg-emerald-800 bg-teal-800 bg-cyan-800 bg-sky-800 bg-blue-800 bg-indigo-800 bg-violet-800 bg-fuchsia-800 bg-pink-800 bg-rose-800"></span>
 
 			{(connections.length === 0)
 				? <p><em>No active client connections.</em></p>

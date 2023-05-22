@@ -123,10 +123,12 @@ export function Playground() {
 					: <p><em>(Please select an active client connection)</em></p>}
 			</div>
 
-			<div className="p-6 text-sm">
+			<div className="p-6">
 				<h2 className="text-xl font-semibold mb-2">State</h2>
 				{(selectedConnection)
-					? <StateView key={selectedConnection.sessionId} connection={selectedConnection} />
+					? <div className="text-sm">
+							<StateView key={selectedConnection.sessionId} connection={selectedConnection} />
+						</div>
 					: <p><em>(Please select an active client connection)</em></p>}
 			</div>
 
