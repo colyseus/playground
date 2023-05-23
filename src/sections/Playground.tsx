@@ -71,7 +71,7 @@ export function Playground() {
 		</div>
 
 		{/*  gap-6 */}
-		<div className="mt-6 bg-white rounded grid grid-cols-2">
+		<div className="mt-6 bg-white rounded grid grid-cols-2 min-h-screen">
 
 			<div className="p-6">
 				<h2 className="text-xl font-semibold">Inspect connection</h2>

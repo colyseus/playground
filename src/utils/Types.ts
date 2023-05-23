@@ -33,7 +33,7 @@ export const allRoomColors: string[] = [
 ];
 // ,"stone", "amber", "yellow", "purple"
 
-export function getRoomColor(roomId: string) {
+export function getRoomColorClass(roomId: string) {
   if (!colorsByRoomId[roomId]) {
     if (currentColor >= allRoomColors.length) {
       currentColor = 0;
@@ -41,7 +41,7 @@ export function getRoomColor(roomId: string) {
     colorsByRoomId[roomId] = allRoomColors[currentColor];
     currentColor++;
   }
-  return colorsByRoomId[roomId];
+  return "bg-" + colorsByRoomId[roomId] + "-800";
 }
 export const colorsByRoomId: {[roomId: string]: string} = {};
 

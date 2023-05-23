@@ -1,6 +1,6 @@
 import { Client, Room } from "colyseus.js";
 import { useState } from "react";
-import { client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods } from "../utils/Types";
+import { client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -98,7 +98,7 @@ export function JoinRoomForm ({
 	return (<>
 		<h2 className="text-xl font-semibold">Join a room</h2>
 
-		<p className="mt-2"><strong>Method</strong></p>
+		<p className="mt-4"><strong>Method</strong></p>
 		<div className="flex mt-2">
 			{Object.keys(matchmakeMethods).map((method) => (
 			<div key={method} className="flex items-center mr-4">
@@ -117,7 +117,7 @@ export function JoinRoomForm ({
 		{(selectedMethod !== "joinById")
 			? // NOT joinById
 			<>
-				<p className="mt-2"><strong>Available room types:</strong></p>
+				<p className="mt-4"><strong>Available room types:</strong></p>
 				<div className="flex mt-2 flex-wrap">
 
 					{/* No room definitions found */}
@@ -150,12 +150,12 @@ export function JoinRoomForm ({
 
 		: // joinById
 			<>
-				<p className="mt-2"><strong>Available rooms by ID:</strong></p>
+				<p className="mt-4"><strong>Available rooms by ID:</strong></p>
 				<div className="flex mt-2 flex-wrap">
 
 					{/* No room definitions found */}
 					{(Object.keys(roomsById).length) === 0 &&
-						<p>No rooms available.</p>}
+						<p><em>No rooms available.</em></p>}
 
 					{/* List room definitions */}
 					{(Object.keys(roomsById)).map((roomId) => (
@@ -168,7 +168,7 @@ export function JoinRoomForm ({
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
 								<label htmlFor={"roomid_" + roomId} className="ml-2 text-sm font-medium text-gray-900">
-									<code className="bg-gray-100 p-1">{roomId}</code>
+									<code className={"p-1 rounded text-white " + getRoomColorClass(roomId)}>{roomId}</code>
 									<span className="relative ml-1 text-sm text-gray-500">
 										({roomsById[roomId].name})
 									</span>
@@ -179,7 +179,7 @@ export function JoinRoomForm ({
 			</>
 		}
 
-		<p className="mt-2"><strong>Join options</strong></p>
+		<p className="mt-4"><strong>Join options</strong></p>
 		<div className="flex mt-2">
 			<textarea name="options" id="options" className="border border-gray-300 w-80 font-mono p-1.5 rounded" rows={1} onChange={handleOptionsChange} value={options} />
 		</div>

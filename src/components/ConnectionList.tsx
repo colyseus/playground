@@ -1,6 +1,6 @@
 import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
-import { Connection, allRoomColors, getRoomColor, roomsBySessionId } from "../utils/Types";
+import { Connection, allRoomColors, getRoomColorClass, roomsBySessionId } from "../utils/Types";
 
 function ConnectionItem({
 	connection,
@@ -39,7 +39,7 @@ function ConnectionItem({
 
 				<span className="ml-2 bg-orange-500 p-1 rounded text-white font-semibold">{room.name}</span>
 				<code className="ml-2 bg-gray-100 p-1 rounded">sessionId: {connection.sessionId}</code>
-				<code className={"bg-" + getRoomColor(room.roomId) + "-800" + " text-white ml-2 p-1 rounded"}>roomId: {room.roomId}</code>
+				<code className={getRoomColorClass(room.roomId) + " text-white ml-2 p-1 rounded"}>roomId: {room.roomId}</code>
 			</>}
 
 	</div>
