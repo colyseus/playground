@@ -59,8 +59,6 @@ export function ConnectionList({
 	const onClick = (connection: Connection) =>
 		setSelectedConnection(connection)
 
-	console.log("RENDER CONNECTION LIST, length =>", connections.length);
-
 	return (
 		<div className="bg-white rounded p-6">
 			<h2 className="text-xl font-semibold mb-2">Client connections</h2>

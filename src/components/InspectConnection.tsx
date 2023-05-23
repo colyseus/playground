@@ -28,6 +28,9 @@ const tabs: {[key in InspectTab]: TabConfig} = {
 	},
 };
 
+// When switching connections, use last tab opened from previous session
+let lastTabSelected = InspectTab.MESSAGES;
+
 export function InspectConnection({
 	client,
 	connection,
@@ -44,7 +47,7 @@ export function InspectConnection({
 	const [allMessages, setAllMessages] = useState((connection.messages) as any[]);
 	const [messageType, setMessageType] = useState(messageTypes[0]);
 	const [message, setMessage] = useState("{}");
-	const [selectedTab, setSelectedTab] = useState(InspectTab.MESSAGES)
+	const [selectedTab, setSelectedTab] = useState(lastTabSelected)
 
 	// TODO: allow sending message of any type
 	const hasWildcardMessageType = messageTypes.indexOf("*") >= 0;
@@ -56,8 +59,10 @@ export function InspectConnection({
 	const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
 		setMessage(e.target.value);
 
-	const handleSelectTab = (e: React.MouseEvent<HTMLButtonElement>) =>
-		setSelectedTab(e.currentTarget.value as InspectTab);
+	const handleSelectTab = (e: React.MouseEvent<HTMLButtonElement>) => {
+		lastTabSelected = e.currentTarget.value as InspectTab;
+		setSelectedTab(lastTabSelected);
+	}
 
 	// actions
 	const reconnect = () => {
