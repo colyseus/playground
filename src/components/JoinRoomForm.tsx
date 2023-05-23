@@ -1,6 +1,7 @@
 import { Client, Room } from "colyseus.js";
 import { useState } from "react";
 import { client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
+import { RAW_EVENTS_KEY } from "../utils/ColyseusSDKExt";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -61,17 +62,37 @@ export function JoinRoomForm ({
 				sessionId: room.sessionId,
 				isConnected: true,
 				messages: [],
-				events: [],
+				events: (room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume raw events from ColyseusSDKExt
+					type: data[0],
+					message: data[1],
+					in: true,
+					now: data[2]
+				})),
 				error: undefined,
 			};
 
+			room.onMessage(RAW_EVENTS_KEY, (data) => {
+				connection.events.unshift({
+					type: data[0],
+					message: data[1],
+					in: true,
+					now: new Date()
+				});
+			});
+
 			// prepend received messages
-			room.onMessage("*", (type, message) =>
-				connection.messages.unshift({ type, message, in: true, now: new Date() }));
+			room.onMessage("*", (type, message) => {
+				const now = new Date();
+				connection.messages.unshift({ type, message, in: true, now })
+			});
 
-			room.onLeave(() => onDisconnection(room.sessionId));
+			room.onLeave((code) => {
+				onDisconnection(room.sessionId);
+			});
 
-			room.onError((code, message) => { });
+			room.onError((code, message) => {
+				// connection.events.push({ type: "error", message: { code, message }, now: new Date() });
+			});
 
 			room.onMessage("__playground_message_types", (types) => {
 				// global message types by room name

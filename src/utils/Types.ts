@@ -4,8 +4,8 @@ export type Connection = {
   sessionId: string;
   isConnected: boolean;
   messages: any[];
+  events: any[];
   error?: any;
-  events?: any[];
 };
 
 export const endpoint = "http://localhost:2567";
