@@ -202,7 +202,8 @@ export function JoinRoomForm ({
 
 		<p className="mt-4"><strong>Join options</strong></p>
 		<div className="flex mt-2">
-			<textarea name="options" id="options" className="border border-gray-300 w-80 font-mono p-1.5 rounded" rows={1} onChange={handleOptionsChange} value={options} />
+			<textarea data-gramm="false" /* disable grammarly extension */
+				name="options" id="options" className="border border-gray-300 w-80 font-mono p-1.5 rounded" rows={1} onChange={handleOptionsChange} value={options} />
 		</div>
 
 		<div className="flex mt-4">

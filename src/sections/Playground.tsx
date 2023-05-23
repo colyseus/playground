@@ -20,11 +20,16 @@ export function Playground() {
 	const [selectedConnection, setSelectedConnection] = useState(undefined as unknown as Connection);
 
 	const onConnectionSuccessful = (connection: Connection) => {
-		global.connections = [connection, ...global.connections];
-		setConnections(global.connections);
+		if (global.connections.indexOf(connection) !== -1) {
+			console.log("Devmode connection has been restored!");
 
-		if (!selectedConnection) {
-			setSelectedConnection(connection);
+		} else {
+			global.connections = [connection, ...global.connections];
+			setConnections(global.connections);
+
+			if (!selectedConnection) {
+				setSelectedConnection(connection);
+			}
 		}
 	}
 
