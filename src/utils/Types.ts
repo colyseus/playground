@@ -1,4 +1,4 @@
-import { Room } from "colyseus.js";
+import { Client, Room } from "colyseus.js";
 
 export type Connection = {
   sessionId: string;
@@ -8,9 +8,13 @@ export type Connection = {
   events?: any[];
 };
 
+export const endpoint = "http://localhost:2567";
+export const client = new Client(endpoint);
+
+export const global = { connections: [] as Connection[], };
+
 export const roomsBySessionId: { [key: string]: Room } = {};
 export const messageTypesByRoom: { [key: string]: string[] } = {};
-
 
 let currentColor = -1;
 export const allRoomColors: string[] = [

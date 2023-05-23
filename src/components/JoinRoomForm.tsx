@@ -1,55 +1,102 @@
-import { Client } from "colyseus.js";
+import { Client, Room } from "colyseus.js";
 import { useState } from "react";
-
-import { matchmakeMethods } from "../utils/Types";
+import { client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods } from "../utils/Types";
 
 export function JoinRoomForm ({
 	roomNames,
-	createClientConnection,
+	onConnectionSuccessful,
+	onDisconnection,
 } : {
 	roomNames: string[]
-	createClientConnection: (method: keyof Client, roomName: string, options: string) => void
+	onConnectionSuccessful: (connection: Connection) => void
+	onDisconnection: (sessionId: string) => void
 }) {
 	const [selectedRoomName, setRoomName] = useState(roomNames[0]);
+	const [selectedRoomId, setRoomId] = useState(""); // only for joinById
 	const [selectedMethod, setMethod] = useState(Object.keys(matchmakeMethods)[0] as keyof Client);
 	const [options, setOptions] = useState("{}");
+	const [isLoading, setLoading] = useState(false);
+	const [error, setError] = useState("");
 
-	const handleSelectedRoomChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-		setRoomName(e.target.value);
+	// remote stats
+	const [roomCount, setRoomCount] = useState({} as {[key: string]: number});
+	const [roomsById, setRoomsById] = useState({} as {[key: string]: {name: string, metadata: any}});
 
-	const handleSelectedMethodChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-		setMethod(e.target.value as keyof Client);
+	const handleSelectedRoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (selectedMethod === "joinById") {
+			setRoomId(e.target.value);
+		} else {
+			setRoomName(e.target.value);
+		}
+	}
+
+	const handleSelectedMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const method = e.target.value as keyof Client;
+		setMethod(method);
+
+		// fetch rooms by ID
+		if (method === "joinById") {
+			fetch(`${endpoint}/playground/rooms_by_id`).
+				then((response) => response.json()).
+				then((rooms) => setRoomsById(rooms)).
+				catch((e) => console.error(e));
+		}
+	}
 
 	const handleOptionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
 		setOptions(e.target.value);
 
 	const onJoinClick = () =>
-		createClientConnection(selectedMethod, selectedRoomName, options);
+		createClientConnection(selectedMethod, (selectedMethod === "joinById") ? selectedRoomId : selectedRoomName, options);
+
+	// create new connection to server
+	const createClientConnection = async (method: keyof Client, roomName: string, options: string) => {
+		setError(""); // clear previous error
+		setLoading(true);
+		try {
+			const room = (await client[method](roomName, JSON.parse(options))) as Room;
+			roomsBySessionId[room.sessionId] = room;
+
+			const connection: Connection = {
+				sessionId: room.sessionId,
+				isConnected: true,
+				messages: [],
+				events: [],
+				error: undefined,
+			};
+
+			// prepend received messages
+			room.onMessage("*", (type, message) =>
+				connection.messages.unshift({ type, message, in: true, now: new Date() }));
+
+			room.onLeave(() => onDisconnection(room.sessionId));
+
+			room.onError((code, message) => { });
+
+			room.onMessage("__playground_message_types", (types) => {
+				// global message types by room name
+				messageTypesByRoom[room.name] = types;
+
+				// append connection to connections list
+				onConnectionSuccessful(connection);
+
+				// fetch room count immediatelly after joining
+				fetch(`${endpoint}/playground/stats`).
+					then((response) => response.json()).
+					then((stats) => setRoomCount(stats)).
+					catch((e) => console.error(e));
+			});
+
+		} catch (e: any) {
+			const error = e.target?.statusText || e.message || "server is down.";
+			setError(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	return (<>
 		<h2 className="text-xl font-semibold">Join a room</h2>
-
-		<p className="mt-2"><strong>Available room types:</strong></p>
-		<div className="flex mt-2 flex-wrap">
-
-			{/* No room definitions found */}
-			{(roomNames.length) === 0 &&
-				<p>Your server does not define any room type. See <a href="https://docs.colyseus.io/server/api/#define-roomname-string-room-room-options-any">documentation</a>.</p>}
-
-			{/* List room definitions */}
-			{(roomNames).map((roomName) => (
-				<div key={roomName} className="flex items-center mr-4 mb-2">
-						<input id={"name_" + roomName}
-							name="room_name"
-							type="radio"
-							value={roomName}
-							checked={selectedRoomName === roomName}
-							onChange={handleSelectedRoomChange}
-							className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
-						<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900"><code className="bg-gray-100 p-1">{roomName}</code></label>
-				</div>
-			))}
-		</div>
 
 		<p className="mt-2"><strong>Method</strong></p>
 		<div className="flex mt-2">
@@ -67,6 +114,71 @@ export function JoinRoomForm ({
 			))}
 		</div>
 
+		{(selectedMethod !== "joinById")
+			? // NOT joinById
+			<>
+				<p className="mt-2"><strong>Available room types:</strong></p>
+				<div className="flex mt-2 flex-wrap">
+
+					{/* No room definitions found */}
+					{(roomNames.length) === 0 &&
+						<p>Your server does not define any room type. See <a href="https://docs.colyseus.io/server/api/#define-roomname-string-room-room-options-any">documentation</a>.</p>}
+
+					{/* List room definitions */}
+					{(roomNames).map((roomName) => (
+						<div key={roomName} className="flex items-center mr-4 mb-2">
+								<input id={"name_" + roomName}
+									name="room_name"
+									type="radio"
+									value={roomName}
+									checked={selectedRoomName === roomName}
+									onChange={handleSelectedRoomChange}
+									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
+								<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900">
+									<code className="bg-gray-100 p-1">{roomName}</code>
+									{(roomCount[roomName] !== undefined) &&
+										<span className="group relative ml-1 text-sm text-gray-500 cursor-help">
+											({roomCount[roomName]})
+											<span className="absolute left-8 w-32 scale-0 rounded bg-gray-800 p-2 text-xs text-white group-hover:scale-100">{roomCount[roomName] + " active room(s)"}</span>
+										</span>}
+
+								</label>
+						</div>
+					))}
+				</div>
+			</>
+
+		: // joinById
+			<>
+				<p className="mt-2"><strong>Available rooms by ID:</strong></p>
+				<div className="flex mt-2 flex-wrap">
+
+					{/* No room definitions found */}
+					{(Object.keys(roomsById).length) === 0 &&
+						<p>No rooms available.</p>}
+
+					{/* List room definitions */}
+					{(Object.keys(roomsById)).map((roomId) => (
+						<div key={roomId} className="flex items-center mr-4 mb-2">
+								<input id={"roomid_" + roomId}
+									name="room_id"
+									type="radio"
+									value={roomId}
+									checked={selectedRoomId === roomId}
+									onChange={handleSelectedRoomChange}
+									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
+								<label htmlFor={"roomid_" + roomId} className="ml-2 text-sm font-medium text-gray-900">
+									<code className="bg-gray-100 p-1">{roomId}</code>
+									<span className="relative ml-1 text-sm text-gray-500">
+										({roomsById[roomId].name})
+									</span>
+								</label>
+						</div>
+					))}
+				</div>
+			</>
+		}
+
 		<p className="mt-2"><strong>Join options</strong></p>
 		<div className="flex mt-2">
 			<textarea name="options" id="options" className="border border-gray-300 w-80 font-mono p-1.5 rounded" rows={1} onChange={handleOptionsChange} value={options} />
@@ -76,6 +188,11 @@ export function JoinRoomForm ({
 			<button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={onJoinClick}>
 				{matchmakeMethods[selectedMethod]}
 			</button>
+			<div className="ml-1 p-2 inline italic">
+				{isLoading && "Connecting..."}
+				{!isLoading && error &&
+					<span className="text-red-500"><strong>Error:</strong> {error}</span>}
+			</div>
 		</div>
 	</>);
 }

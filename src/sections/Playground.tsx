@@ -2,13 +2,10 @@ import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
 
 import { InspectConnection } from "../components/InspectConnection";
-import { Connection, roomsBySessionId, messageTypesByRoom } from "../utils/Types";
+import { client, endpoint, Connection, global } from "../utils/Types";
 import { ConnectionList } from "../components/ConnectionList";
 import { JoinRoomForm } from "../components/JoinRoomForm";
 import { StateView } from "../components/StateView";
-
-const endpoint = "http://localhost:2567";
-const client = new Client(endpoint);
 
 enum ServerState {
 	CONNECTING = "connecting",
@@ -16,62 +13,26 @@ enum ServerState {
 	OFFLINE = "offline",
 }
 
-// WORKAROUND:
-let allConnections: Connection[] = [];
-
 export function Playground() {
 	const [serverState, setServerState] = useState(ServerState.CONNECTING);
 	const [roomNames, setRoomNames] = useState([]);
 	const [connections, setConnections] = useState([] as Connection[]);
 	const [selectedConnection, setSelectedConnection] = useState(undefined as unknown as Connection);
 
-	const disconnectClient = function (sessionId: string) {
-		const connection = allConnections.find((connection) => connection.sessionId === sessionId);
-		connection!.isConnected = false;
-		setConnections([...allConnections]);
+	const onConnectionSuccessful = (connection: Connection) => {
+		global.connections = [connection, ...global.connections];
+		setConnections(global.connections);
+
+		if (!selectedConnection) {
+			setSelectedConnection(connection);
+		}
 	}
 
-	// create new connection to server
-	const createClientConnection = async (method: keyof Client, roomName: string, options: string) => {
-		try {
-			const room = (await client[method](roomName, JSON.parse(options))) as Room;
-			roomsBySessionId[room.sessionId] = room;
-
-			const connection: Connection = {
-				sessionId: room.sessionId,
-				isConnected: true,
-				messages: [],
-				events: [],
-				error: undefined,
-			};
-
-			// prepend received messages
-			room.onMessage("*", (type, message) =>
-				connection.messages.unshift({ type, message, in: true, now: performance.now() }));
-
-			room.onLeave(() => disconnectClient(room.sessionId));
-
-			room.onError((code, message) => { });
-
-			room.onMessage("__playground_message_types", (types) => {
-				// global message types by room name
-				messageTypesByRoom[room.name] = types;
-
-				// append connection to connections list
-				allConnections = [connection, ...allConnections];
-				setConnections(allConnections);
-
-				// auto-select if first connection
-				if (selectedConnection === undefined) {
-					setSelectedConnection(connection);
-				}
-			});
-
-		} catch (e: any) {
-			const error = e.target?.statusText || e.message || "server is down.";
-			setConnections([{ error } as Connection, ...connections]);
-		}
-	};
+	const onDisconnection = function (sessionId: string) {
+		const connection = global.connections.find((connection) => connection.sessionId === sessionId);
+		connection!.isConnected = false;
+		setConnections([...global.connections]);
+	}
 
 	// fetch rooms on mount
 	useEffect(() => {
@@ -96,7 +57,8 @@ export function Playground() {
 				{(serverState === ServerState.CONNECTED) &&
 					<JoinRoomForm
 						roomNames={roomNames}
-						createClientConnection={createClientConnection}
+						onConnectionSuccessful={onConnectionSuccessful}
+						onDisconnection={onDisconnection}
 					/>}
 			</div>
 
