@@ -2,6 +2,7 @@ import './App.css';
 
 import React, { useEffect } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import Logo from "./favicon.svg";
 
 import { Home } from './sections/Home';
 import { Playground } from './sections/Playground';
@@ -48,7 +49,10 @@ export default function App() {
           <div className="flex-1 overflow-y-auto bg-gray-100">
             <div className="container mx-auto p-8">
 
-              <img src="https://github.com/colyseus/colyseus/blob/master/media/header.png?raw=1" alt="" className="w-48 m-auto mt-6" />
+              <div className="flex mt-4 mb-10 justify-center">
+                <img src={Logo} alt="" className="w-8 mr-2" />
+                <h1 className="text-3xl"><span className="font-semibold">Colyseus</span> <span className="font-extralight">Playground</span></h1>
+              </div>
 
               <Routes>
                 {routes.map((route, index) => (

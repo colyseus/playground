@@ -54,9 +54,9 @@ export function Playground() {
 	}, []);
 
 	return <>
-		<div className="mt-14 grid grid-cols-2 gap-6">
+		<div className="grid grid-cols-2 gap-6">
 
-			<div className="bg-white rounded p-6">
+			<div className="bg-white shadow rounded p-6">
 				{(serverState === ServerState.CONNECTING) && <p>Connecting to server...</p>}
 				{(serverState === ServerState.OFFLINE) && <p>Server is offline.</p>}
 				{(serverState === ServerState.CONNECTED) &&
@@ -67,16 +67,18 @@ export function Playground() {
 					/>}
 			</div>
 
-			<ConnectionList
-				connections={connections}
-				selectedConnection={selectedConnection}
-				setSelectedConnection={setSelectedConnection}
-				/>
+			<div className="bg-white shadow rounded p-6">
+				<ConnectionList
+					connections={connections}
+					selectedConnection={selectedConnection}
+					setSelectedConnection={setSelectedConnection}
+					/>
+			</div>
 
 		</div>
 
 		{/*  gap-6 */}
-		<div className="mt-6 bg-white rounded grid grid-cols-2 min-h-screen">
+		<div className="mt-6 bg-white shadow rounded grid grid-cols-2 min-h-screen">
 
 			<div className="p-6">
 				<h2 className="text-xl font-semibold">Inspect connection</h2>

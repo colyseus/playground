@@ -59,22 +59,20 @@ export function ConnectionList({
 	const onClick = (connection: Connection) =>
 		setSelectedConnection(connection)
 
-	return (
-		<div className="bg-white rounded p-6">
-			<h2 className="text-xl font-semibold mb-2">Client connections</h2>
+	return (<>
+		<h2 className="text-xl font-semibold mb-2">Client connections</h2>
 
-			{/* Workaround to emit CSS for all available colors */}
-			<span className="bg-lime-800 bg-green-800 bg-emerald-800 bg-teal-800 bg-cyan-800 bg-sky-800 bg-blue-800 bg-indigo-800 bg-violet-800 bg-fuchsia-800 bg-pink-800 bg-rose-800"></span>
+		{/* Workaround to emit CSS for all available colors */}
+		<span className="bg-lime-800 bg-green-800 bg-emerald-800 bg-teal-800 bg-cyan-800 bg-sky-800 bg-blue-800 bg-indigo-800 bg-violet-800 bg-fuchsia-800 bg-pink-800 bg-rose-800"></span>
 
-			{(connections.length === 0)
-				? <p><em>No active client connections.</em></p>
-				: connections.map((connection, i) =>
-					<ConnectionItem
-						key={connection.sessionId || i.toString()}
-						connection={connection}
-						isSelected={connection === selectedConnection}
-						onClick={onClick} />
-				)}
-		</div>
-	);
+		{(connections.length === 0)
+			? <p><em>No active client connections.</em></p>
+			: connections.map((connection, i) =>
+				<ConnectionItem
+					key={connection.sessionId || i.toString()}
+					connection={connection}
+					isSelected={connection === selectedConnection}
+					onClick={onClick} />
+			)}
+	</>);
 }
