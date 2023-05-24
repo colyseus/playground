@@ -206,8 +206,11 @@ export function InspectConnection({
 							</tr>}
 
 						{(connection.events).map((message, i) => (
-							<tr key={i+'-'+message.now} className={"border-b " + (message.in ? "bg-red-100" : "bg-green-100")}>
+							<tr key={i+'-'+message.now} className={"border-b " + (message.event ? "bg-yellow-100" : (message.in ? "bg-red-100" : "bg-green-100"))}>
 								<td className="p-2">
+									{message.event &&
+										<span className="inline text-red-600 text-base">{message.event}</span> }
+
 									{message.in &&
 									<span className="inline text-red-600 text-base">↓</span> }
 
@@ -228,7 +231,15 @@ export function InspectConnection({
 								</td>
 
 								<td className="p-2 text-xs">
-									{message.now.getHours()}:{message.now.getMinutes()}:{message.now.getSeconds()}.{String(message.now.getMilliseconds()).padStart(3, "0")}
+									{
+										String(message.now.getHours()).padStart(2, "0") // hours
+									}:{
+										String(message.now.getMinutes()).padStart(2, "0") // minutes
+									}:{
+										String(message.now.getSeconds()).padStart(2, "0") // seconds
+									}.{
+										String(message.now.getMilliseconds()).padStart(3, "0") // milliseconds
+									}
 								</td>
 							</tr>
 						))}

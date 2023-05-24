@@ -21,7 +21,7 @@ Room.prototype['onMessageCallback'] = function(event: MessageEvent) {
       ws.onclose = (event: any) => {
         wsOnClose.call(ws, event);
         if (event.code === 4010) {// CloseCode.DEVMODE_RESTART
-          this['onMessageHandlers'].emit(RAW_EVENTS_KEY, ['DEVMODE_RESTART', 'Connection closed.']);
+          this['onMessageHandlers'].emit(RAW_EVENTS_KEY, ['DEVMODE_RESTART', 'close']);
         }
       };
 

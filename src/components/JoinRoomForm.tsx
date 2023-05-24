@@ -71,13 +71,19 @@ export function JoinRoomForm ({
 				error: undefined,
 			};
 
-			room.onMessage(RAW_EVENTS_KEY, (data) => {
-				connection.events.unshift({
-					type: data[0],
-					message: data[1],
-					in: true,
-					now: new Date()
-				});
+			room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
+				const event: any = { type: data[0], message: data[1], now: new Date() };
+
+				if (data[1] === "close") {
+					event.message = "Connection closed.";
+					event.event = "🅧"; // ⓧ | ⛝
+
+				} else if (Array.isArray(data[1])) {
+					event.message = data[1];
+					event.in = true;
+				}
+
+				connection.events.unshift(event);
 			});
 
 			// prepend received messages
