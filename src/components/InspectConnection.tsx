@@ -193,7 +193,7 @@ export function InspectConnection({
 					<div><table className="table-auto w-full border-collapse text-center text-xs border-t border-l border-r">
 						<thead>
 							<tr className="border-b">
-								<th colSpan={2} className="p-3 border-r">Protocol</th>
+								<th colSpan={2} className="p-3 border-r">Event</th>
 								<th className="p-3 w-full border-r">Raw</th>
 								<th className="p-3">Time</th>
 							</tr>
