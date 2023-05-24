@@ -77,12 +77,9 @@ export function InspectConnection({
 		const now = new Date();
 		const payload = JSON.parse(message);
 
-		setAllMessages([{
-			type: messageType,
-			message: payload,
-			out: true,
-			now,
-		}, ...allMessages]);
+		const newMessage = { type: messageType, message: payload, out: true, now, };
+		setAllMessages([newMessage, ...allMessages]);
+		connection.messages.unshift(newMessage);
 
 		room.send(messageType, payload);
 	};
@@ -223,8 +220,10 @@ export function InspectConnection({
 								</td>
 
 								<td className="p-2 border-r text-left">
-									<div className="truncate italic w-60 overflow-hidden text-ellipsis">
-										<code>({message.message.length} bytes) {JSON.stringify(message.message)}</code>
+									<div className="truncate w-60 overflow-hidden text-ellipsis">
+											{(Array.isArray(message.message))
+												? <code className="italic">({message.message.length} bytes) {JSON.stringify(message.message)}</code>
+												: message.message}
 									</div>
 								</td>
 
