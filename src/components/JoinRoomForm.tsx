@@ -1,7 +1,7 @@
 import { Client, Room } from "colyseus.js";
 import { useState } from "react";
 import { client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
-import { RAW_EVENTS_KEY } from "../utils/ColyseusSDKExt";
+import { DEVMODE_RESTART, RAW_EVENTS_KEY } from "../utils/ColyseusSDKExt";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -22,6 +22,14 @@ export function JoinRoomForm ({
 	// remote stats
 	const [roomCount, setRoomCount] = useState({} as {[key: string]: number});
 	const [roomsById, setRoomsById] = useState({} as {[key: string]: {name: string, metadata: any}});
+
+	// get room name / room count
+	const fetchRoomStats = () => {
+		fetch(`${endpoint}/playground/stats`).
+			then((response) => response.json()).
+			then((stats) => setRoomCount(stats)).
+			catch((e) => console.error(e));
+	}
 
 	const handleSelectedRoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (selectedMethod === "joinById") {
@@ -62,42 +70,39 @@ export function JoinRoomForm ({
 				sessionId: room.sessionId,
 				isConnected: true,
 				messages: [],
-				events: (room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume raw events from ColyseusSDKExt
-					type: data[0],
-					message: data[1],
-					in: true,
-					now: data[2]
+				events: (room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume initial raw events from ColyseusSDKExt
+					eventType: data[0],
+					type: data[1],
+					message: data[2],
+					now: data[3]
 				})),
 				error: undefined,
 			};
 
-			room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
-				const event: any = { type: data[0], message: data[1], now: new Date() };
-
-				if (data[1] === "close") {
-					event.message = "Connection closed.";
-					event.event = "🅧"; // ⓧ | ⛝
-
-				} else if (Array.isArray(data[1])) {
-					event.message = data[1];
-					event.in = true;
-				}
-
-				connection.events.unshift(event);
-			});
-
 			// prepend received messages
 			room.onMessage("*", (type, message) => {
-				const now = new Date();
-				connection.messages.unshift({ type, message, in: true, now })
+				connection.messages.unshift({
+					type,
+					message,
+					in: true,
+					now: new Date()
+				})
 			});
 
-			room.onLeave((code) => {
-				onDisconnection(room.sessionId);
-			});
+			room.onLeave((code) => onDisconnection(room.sessionId));
 
-			room.onError((code, message) => {
-				// connection.events.push({ type: "error", message: { code, message }, now: new Date() });
+			// devmode restart event
+			room.onMessage(DEVMODE_RESTART, (data: any[]) => onDisconnection(room.sessionId));
+
+			// raw events from SDK
+			room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
+				// FIXME: React is not updating the view when pushing to array
+				connection.events.unshift({
+					eventType: data[0],
+					type: data[1],
+					message: data[2],
+					now: new Date(),
+				});
 			});
 
 			room.onMessage("__playground_message_types", (types) => {
@@ -108,10 +113,7 @@ export function JoinRoomForm ({
 				onConnectionSuccessful(connection);
 
 				// fetch room count immediatelly after joining
-				fetch(`${endpoint}/playground/stats`).
-					then((response) => response.json()).
-					then((stats) => setRoomCount(stats)).
-					catch((e) => console.error(e));
+				fetchRoomStats();
 			});
 
 		} catch (e: any) {
@@ -209,7 +211,7 @@ export function JoinRoomForm ({
 		<p className="mt-4"><strong>Join options</strong></p>
 		<div className="flex mt-2">
 			<textarea data-gramm="false" /* disable grammarly extension */
-				name="options" id="options" className="border border-gray-300 w-80 font-mono p-1.5 rounded" rows={1} onChange={handleOptionsChange} value={options} />
+				name="options" id="options" className="border w-full border-gray-300 w-80 font-mono p-1.5 rounded" rows={2} onChange={handleOptionsChange} value={options} />
 		</div>
 
 		<div className="flex mt-4">

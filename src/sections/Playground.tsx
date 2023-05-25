@@ -21,13 +21,17 @@ export function Playground() {
 
 	const onConnectionSuccessful = (connection: Connection) => {
 		if (global.connections.indexOf(connection) !== -1) {
-			console.log("Devmode connection has been restored!");
+			// reconnected! (via devMode or .reconnect())
+			connection.isConnected = true;
+			setConnections(global.connections);
 
 		} else {
+			// new connection
 			global.connections = [connection, ...global.connections];
 			setConnections(global.connections);
 
-			if (!selectedConnection) {
+			// auto-select connection
+			if (!selectedConnection || !selectedConnection.isConnected) {
 				setSelectedConnection(connection);
 			}
 		}

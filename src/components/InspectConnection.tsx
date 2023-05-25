@@ -1,6 +1,7 @@
 import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
 import { Connection, roomsBySessionId, messageTypesByRoom } from "../utils/Types";
+import { Timestamp } from "./Timestamp";
 
 enum InspectTab {
 	MESSAGES = "messages",
@@ -48,6 +49,7 @@ export function InspectConnection({
 	const [messageType, setMessageType] = useState(messageTypes[0]);
 	const [message, setMessage] = useState("{}");
 	const [selectedTab, setSelectedTab] = useState(lastTabSelected)
+	const [currentError, setCurrentError] = useState("");
 
 	// TODO: allow sending message of any type
 	const hasWildcardMessageType = messageTypes.indexOf("*") >= 0;
@@ -64,24 +66,38 @@ export function InspectConnection({
 		setSelectedTab(lastTabSelected);
 	}
 
+	const displayError = (message: any) => {
+		setCurrentError(message);
+		setTimeout(() => setCurrentError(""), 3000);
+	}
+
 	// actions
-	const reconnect = () => {
+	const reconnect = async () => {
 		// TODO: reuse events from previous room on the new one...
-		client.reconnect(room.reconnectionToken);
+		try {
+			const reconnectedRoom = await client.reconnect(room.reconnectionToken);
+		} catch (e: any) {
+			displayError(e.message);
+		}
 	}
 
 	const drop = () => room.connection.close();
 	const leave = () => room.leave();
 
 	const sendMessage = () => {
-		const now = new Date();
-		const payload = JSON.parse(message);
+		try {
+			const now = new Date();
+			const payload = JSON.parse(message);
 
-		const newMessage = { type: messageType, message: payload, out: true, now, };
-		setAllMessages([newMessage, ...allMessages]);
-		connection.messages.unshift(newMessage);
+			const newMessage = { type: messageType, message: payload, out: true, now, };
+			setAllMessages([newMessage, ...allMessages]);
+			connection.messages.unshift(newMessage);
 
-		room.send(messageType, payload);
+			room.send(messageType, payload);
+
+		} catch (e: any) {
+			displayError(e.message);
+		}
 	};
 
 	return (
@@ -109,10 +125,6 @@ export function InspectConnection({
 			</div>
 
 			<div className="grid grid-cols-3 gap-2 my-2 text-sm">
-				<button className="bg-green-500 enabled:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-1 px-4 rounded " disabled={!allowReconnect} onClick={reconnect}>
-					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M352 96l64 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0c53 0 96-43 96-96l0-256c0-53-43-96-96-96l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32zm-9.4 182.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L242.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"/></svg>
-					Reconnect
-				</button>
 				<button className="bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 rounded" disabled={allowReconnect} onClick={drop}>
 					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
 					 Drop
@@ -121,7 +133,15 @@ export function InspectConnection({
 					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/></svg>
 					Leave
 				</button>
+				<button className="bg-green-500 enabled:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-1 px-4 rounded " disabled={!allowReconnect} onClick={reconnect}>
+					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M352 96l64 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0c53 0 96-43 96-96l0-256c0-53-43-96-96-96l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32zm-9.4 182.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L242.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"/></svg>
+					Reconnect
+				</button>
 			</div>
+
+			{/* Display reconnection error */}
+			{(currentError) &&
+				<div className="bg-red-500 text-white py-2 px-3 rounded text-sm my-2"><strong>Error:</strong> {currentError}</div>}
 
 			<div className="border-b border-gray-200">
 				<ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500">
@@ -176,11 +196,13 @@ export function InspectConnection({
 								</td>
 
 								<td className="p-2 border-r text-left">
-									<code>{JSON.stringify(message.message)}</code>
+									<div className="truncate w-80 ">
+										<code>{JSON.stringify(message.message)}</code>
+									</div>
 								</td>
 
 								<td className="p-2 text-xs">
-									{message.now.getHours()}:{message.now.getMinutes()}:{message.now.getSeconds()}.{message.now.getMilliseconds()}
+									<Timestamp date={message.now} />
 								</td>
 							</tr>
 						))}
@@ -206,16 +228,21 @@ export function InspectConnection({
 							</tr>}
 
 						{(connection.events).map((message, i) => (
-							<tr key={i+'-'+message.now} className={"border-b " + (message.event ? "bg-yellow-100" : (message.in ? "bg-red-100" : "bg-green-100"))}>
+							<tr key={i+'-'+message.now} className={"border-b " + (
+								(message.eventType === "close" || message.eventType === "error")
+									? "bg-yellow-100"
+									: (message.eventType === "in")
+										? "bg-red-100"
+										: "bg-green-100"
+							)}>
 								<td className="p-2">
-									{message.event &&
-										<span className="inline text-red-600 text-base">{message.event}</span> }
 
-									{message.in &&
-									<span className="inline text-red-600 text-base">↓</span> }
+									{ (message.eventType === "close" || message.eventType === "error")
+										? <span className="inline text-red-600 text-base">🅧</span>
+										: (message.eventType === "in")
+												? <span className="inline text-red-600 text-base">↓</span>
+												: <span className="inline text-green-600 text-base">↑</span>}
 
-									{message.out &&
-									<span className="inline text-green-600 text-base">↑</span> }
 								</td>
 
 								<td className="p-2 border-r text-left">
@@ -226,20 +253,15 @@ export function InspectConnection({
 									<div className="truncate w-60 overflow-hidden text-ellipsis">
 											{(Array.isArray(message.message))
 												? <code className="italic">({message.message.length} bytes) {JSON.stringify(message.message)}</code>
-												: message.message}
+												: typeof(message.message) === "string"
+													? <code>{message.message}</code>
+													: <code className="italic">{JSON.stringify(message.message)}</code>
+											}
 									</div>
 								</td>
 
 								<td className="p-2 text-xs">
-									{
-										String(message.now.getHours()).padStart(2, "0") // hours
-									}:{
-										String(message.now.getMinutes()).padStart(2, "0") // minutes
-									}:{
-										String(message.now.getSeconds()).padStart(2, "0") // seconds
-									}.{
-										String(message.now.getMilliseconds()).padStart(3, "0") // milliseconds
-									}
+									<Timestamp date={message.now} />
 								</td>
 							</tr>
 						))}
