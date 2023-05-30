@@ -75,7 +75,10 @@ export function InspectConnection({
 	const reconnect = async () => {
 		// TODO: reuse events from previous room on the new one...
 		try {
-			const reconnectedRoom = await client.reconnect(room.reconnectionToken);
+			// manually reconnect using internal SDK API:
+			const [roomId, reconnectionToken] = room.reconnectionToken.split(":");
+			await client['createMatchMakeRequest']("reconnect", roomId, { reconnectionToken }, undefined, room);
+
 		} catch (e: any) {
 			displayError(e.message);
 		}

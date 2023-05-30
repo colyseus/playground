@@ -1,7 +1,7 @@
 import { Client, Room } from "colyseus.js";
 import { useState } from "react";
-import { client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
-import { DEVMODE_RESTART, RAW_EVENTS_KEY } from "../utils/ColyseusSDKExt";
+import { global, client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
+import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -55,66 +55,15 @@ export function JoinRoomForm ({
 	const handleOptionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
 		setOptions(e.target.value);
 
-	const onJoinClick = () =>
-		createClientConnection(selectedMethod, (selectedMethod === "joinById") ? selectedRoomId : selectedRoomName, options);
+	const onJoinClick = async () => {
+		const method = selectedMethod;
+		const roomName = (method === "joinById") ? selectedRoomId : selectedRoomName;
 
-	// create new connection to server
-	const createClientConnection = async (method: keyof Client, roomName: string, options: string) => {
 		setError(""); // clear previous error
 		setLoading(true);
+
 		try {
-			const room = (await client[method](roomName, JSON.parse(options))) as Room;
-			roomsBySessionId[room.sessionId] = room;
-
-			const connection: Connection = {
-				sessionId: room.sessionId,
-				isConnected: true,
-				messages: [],
-				events: (room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume initial raw events from ColyseusSDKExt
-					eventType: data[0],
-					type: data[1],
-					message: data[2],
-					now: data[3]
-				})),
-				error: undefined,
-			};
-
-			// prepend received messages
-			room.onMessage("*", (type, message) => {
-				connection.messages.unshift({
-					type,
-					message,
-					in: true,
-					now: new Date()
-				})
-			});
-
-			room.onLeave((code) => onDisconnection(room.sessionId));
-
-			// devmode restart event
-			room.onMessage(DEVMODE_RESTART, (data: any[]) => onDisconnection(room.sessionId));
-
-			// raw events from SDK
-			room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
-				// FIXME: React is not updating the view when pushing to array
-				connection.events.unshift({
-					eventType: data[0],
-					type: data[1],
-					message: data[2],
-					now: new Date(),
-				});
-			});
-
-			room.onMessage("__playground_message_types", (types) => {
-				// global message types by room name
-				messageTypesByRoom[room.name] = types;
-
-				// append connection to connections list
-				onConnectionSuccessful(connection);
-
-				// fetch room count immediatelly after joining
-				fetchRoomStats();
-			});
+			await client[method](roomName, JSON.parse(options));
 
 		} catch (e: any) {
 			const error = e.target?.statusText || e.message || "server is down.";
@@ -122,6 +71,67 @@ export function JoinRoomForm ({
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	// handle new connections
+	onRoomConnected((room: Room) => {
+		// TODO: clean up old connections
+		roomsBySessionId[room.sessionId] = room;
+
+		// get existing Connection for sessionId, or create a new one
+		const connection: Connection = global.connections.find((c) => c.sessionId === room.sessionId) || {
+			sessionId: room.sessionId,
+			isConnected: true,
+			messages: [],
+			events: (room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume initial raw events from ColyseusSDKExt
+				eventType: data[0],
+				type: data[1],
+				message: data[2],
+				now: data[3]
+			})),
+			error: undefined,
+		};
+
+		// prepend received messages
+		room.onMessage("*", (type, message) => {
+			connection.messages.unshift({
+				type,
+				message,
+				in: true,
+				now: new Date()
+			})
+		});
+
+		room.onLeave((code) => onDisconnection(room.sessionId));
+
+		// devmode restart event
+		room.onMessage(DEVMODE_RESTART, (data: any[]) => onDisconnection(room.sessionId));
+
+		// raw events from SDK
+		room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
+			// FIXME: React is not updating the view when pushing to array
+			connection.events.unshift({
+				eventType: data[0],
+				type: data[1],
+				message: data[2],
+				now: new Date(),
+			});
+		});
+
+		room.onMessage("__playground_message_types", (types) => {
+			// global message types by room name
+			messageTypesByRoom[room.name] = types;
+
+			// append connection to connections list
+			onConnectionSuccessful(connection);
+
+			// fetch room count immediatelly after joining
+			fetchRoomStats();
+		});
+	});
+
+	// create new connection to server
+	const createClientConnection = async (method: keyof Client, roomName: string, options: string) => {
 	};
 
 	return (<>

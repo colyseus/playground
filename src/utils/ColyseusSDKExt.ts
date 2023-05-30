@@ -6,6 +6,13 @@ import { Room, Protocol } from "colyseus.js";
 export const RAW_EVENTS_KEY = '$_raw';
 export const DEVMODE_RESTART = '$_devmode';
 
+let roomConnectedCallback = (room: Room) =>
+  console.warn("roomConnectedCallback not set. use onRoomConnected() to set it up.");
+
+export function onRoomConnected(callback: (room: Room) => void) {
+  roomConnectedCallback = callback;
+}
+
 const connect = Room.prototype['connect'];
 Room.prototype['connect'] = function(endpoint: string, devModeCloseCallback: () => void, room: Room) {
   // @ts-ignore
@@ -42,6 +49,9 @@ Room.prototype['connect'] = function(endpoint: string, devModeCloseCallback: () 
     }
     onclose(event);
   };
+
+  // expose room to playground app
+  roomConnectedCallback(room);
 }
 
 const onMessageCallback = Room.prototype['onMessageCallback'];
