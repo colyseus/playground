@@ -32,6 +32,8 @@ const tabs: {[key in InspectTab]: TabConfig} = {
 // When switching connections, use last tab opened from previous session
 let lastTabSelected = InspectTab.MESSAGES;
 
+const MAX_TABLE_ROWS = 25;
+
 export function InspectConnection({
 	client,
 	connection,
@@ -73,7 +75,6 @@ export function InspectConnection({
 
 	// actions
 	const reconnect = async () => {
-		// TODO: reuse events from previous room on the new one...
 		try {
 			// manually reconnect using internal SDK API:
 			const [roomId, reconnectionToken] = room.reconnectionToken.split(":");
@@ -184,7 +185,7 @@ export function InspectConnection({
 								<td colSpan={3} className="p-2">No messages</td>
 							</tr>}
 
-						{(allMessages).map((message, i) => (
+						{(allMessages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
 							<tr key={i+'-'+message.now} className={"border-b " + (message.in ? "bg-red-100" : "bg-green-100")}>
 								<td className="p-2">
 									{message.in &&
@@ -230,7 +231,7 @@ export function InspectConnection({
 								<td colSpan={3} className="p-2">No events</td>
 							</tr>}
 
-						{(connection.events).map((message, i) => (
+						{(connection.events).slice(0, MAX_TABLE_ROWS).map((message, i) => (
 							<tr key={i+'-'+message.now} className={"border-b " + (
 								(message.eventType === "close" || message.eventType === "error")
 									? "bg-yellow-100"

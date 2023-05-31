@@ -2,6 +2,7 @@ import { Client, Room } from "colyseus.js";
 import { useState } from "react";
 import { global, client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
 import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
+import { LimitedArray } from "../utils/LimitedArray";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -78,17 +79,28 @@ export function JoinRoomForm ({
 		// TODO: clean up old connections
 		roomsBySessionId[room.sessionId] = room;
 
+		const existingConnection = global.connections.find((c) => c.sessionId === room.sessionId);
+
+		// FIXME: why .reconnect() doesn't re-use the events?
+		const needRebindEvents = existingConnection && Object.keys(room['onMessageHandlers'].events).length === 0;
+
+		// skip if reconnecting on devMode (previous room events are successfuly re-used.)
+		// when using .reconnect() events need to be bound again
+		if (existingConnection && !needRebindEvents) {
+			return;
+		}
+
 		// get existing Connection for sessionId, or create a new one
-		const connection: Connection = global.connections.find((c) => c.sessionId === room.sessionId) || {
+		const connection: Connection = existingConnection || {
 			sessionId: room.sessionId,
 			isConnected: true,
-			messages: [],
-			events: (room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume initial raw events from ColyseusSDKExt
+			messages: new LimitedArray(),
+			events: new LimitedArray(...(room as any)[RAW_EVENTS_KEY].map((data: any) => ({ // consume initial raw events from ColyseusSDKExt
 				eventType: data[0],
 				type: data[1],
 				message: data[2],
 				now: data[3]
-			})),
+			}))),
 			error: undefined,
 		};
 
