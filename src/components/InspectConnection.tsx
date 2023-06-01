@@ -114,57 +114,63 @@ export function InspectConnection({
 	};
 
 	return (
-	<>
-		<div>
-				<div className="flex items-center">
-
-					<div className="flex mt-2">
-						<select placeholder="Message type" className="border p-2 rounded" value={messageType} onChange={handleMessageTypeChange}>
-							{(messageTypes).map((type) => (
-								<option key={type} value={type}>{type}</option>
-							))}
-						</select>
-					</div>
-
-					<div className="flex mt-2 grow pr-2">
-
-						<JSONEditor
-							text={message}
-							onChangeText={onChangeMessage}
-							onValidationError={onMessageValidationError}
-							maxLines={2}
-							mode="code"
-							search={false}
-							statusBar={false}
-							navigationBar={false}
-							mainMenuBar={false}
-							className={"h-10 overflow-hidden rounded border " + (isSendMessageEnabled ? "border-gray-300" : "border-red-300")}
-						/>
-
-					</div>
-
-					<div className="flex mt-2">
-						<button
-							className="bg-purple-500 transition disabled:opacity-50 enabled:hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
-							disabled={!isSendMessageEnabled}
-							onClick={sendMessage}>Send message</button>
-					</div>
+		<>
+			<div>
+				<div className="grid grid-cols-3 gap-2 my-2 text-sm">
+					<button className="bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 rounded" disabled={allowReconnect} onClick={drop}>
+						<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" /></svg>
+						Drop
+					</button>
+					<button className="bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 rounded" disabled={allowReconnect} onClick={leave}>
+						<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z" /></svg>
+						Leave
+					</button>
+					<button className="bg-green-500 enabled:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-1 px-4 rounded " disabled={!allowReconnect} onClick={reconnect}>
+						<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M352 96l64 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0c53 0 96-43 96-96l0-256c0-53-43-96-96-96l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32zm-9.4 182.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L242.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z" /></svg>
+						Reconnect
+					</button>
 				</div>
-			</div>
 
-			<div className="grid grid-cols-3 gap-2 my-2 text-sm">
-				<button className="bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 rounded" disabled={allowReconnect} onClick={drop}>
-					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
-					 Drop
-				</button>
-				<button className="bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 rounded" disabled={allowReconnect} onClick={leave}>
-					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/></svg>
-					Leave
-				</button>
-				<button className="bg-green-500 enabled:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-1 px-4 rounded " disabled={!allowReconnect} onClick={reconnect}>
-					<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M352 96l64 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0c53 0 96-43 96-96l0-256c0-53-43-96-96-96l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32zm-9.4 182.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L242.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"/></svg>
-					Reconnect
-				</button>
+				<p className="mt-4">
+					<strong>Send a message:</strong>
+				</p>
+
+				{(messageTypes.length === 0 && !hasWildcardMessageType)
+					? <p className="mt-2 mb-4 text-gray-500 text-italic">
+							(This room type does not listen to messages. See <a href="https://docs.colyseus.io/server/room/#onmessage-type-callback" target="_blank"><code className="text-sm bg-gray-100 p-1 rounded">.onMessage()</code></a>)
+						</p>
+					: <div className="flex items-center">
+							<div className="flex mt-2">
+								<select placeholder="Message type" className="border p-2 rounded" value={messageType} onChange={handleMessageTypeChange}>
+									{(messageTypes).map((type) => (
+										<option key={type} value={type}>{type}</option>
+									))}
+								</select>
+							</div>
+
+							<div className="flex mt-2 grow pr-2">
+								<JSONEditor
+									text={message}
+									onChangeText={onChangeMessage}
+									onValidationError={onMessageValidationError}
+									maxLines={2}
+									mode="code"
+									search={false}
+									statusBar={false}
+									navigationBar={false}
+									mainMenuBar={false}
+									className={"h-10 overflow-hidden rounded border " + (isSendMessageEnabled ? "border-gray-300" : "border-red-300")}
+								/>
+							</div>
+
+							<div className="flex mt-2">
+								<button
+									className="bg-purple-500 transition disabled:opacity-50 enabled:hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+									disabled={!isSendMessageEnabled}
+									onClick={sendMessage}>Send message</button>
+							</div>
+						</div> }
+
 			</div>
 
 			{/* Display reconnection error */}
@@ -181,8 +187,8 @@ export function InspectConnection({
 								value={tab}
 								className={((selectedTab === tab) ? "text-purple-600 border-purple-600 " : "") + "inline-flex p-4 border-b-2 rounded-t-lg active group"}
 								aria-current="page">
-									{tabs[tab].icon}
-									{tabs[tab].label}
+								{tabs[tab].icon}
+								{tabs[tab].label}
 							</button>
 						</li>
 					))}
@@ -204,36 +210,36 @@ export function InspectConnection({
 
 						<tbody>
 
-						{(allMessages.length === 0) &&
-							<tr className={"p-2 border-b"}>
-								<td colSpan={3} className="p-2">No messages</td>
-							</tr>}
+							{(allMessages.length === 0) &&
+								<tr className={"p-2 border-b"}>
+									<td colSpan={3} className="p-2">No messages</td>
+								</tr>}
 
-						{(allMessages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
-							<tr key={i+'-'+message.now} className={"border-b " + (message.in ? "bg-red-100" : "bg-green-100")}>
-								<td className="p-2">
-									{message.in &&
-									<span className="inline text-red-600 text-base">↓</span> }
+							{(allMessages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
+								<tr key={i + '-' + message.now} className={"border-b " + (message.in ? "bg-red-100" : "bg-green-100")}>
+									<td className="p-2">
+										{message.in &&
+											<span className="inline text-red-600 text-base">↓</span>}
 
-									{message.out &&
-									<span className="inline text-green-600 text-base">↑</span> }
-								</td>
+										{message.out &&
+											<span className="inline text-green-600 text-base">↑</span>}
+									</td>
 
-								<td className="p-2 border-r text-left">
-									<code className="ml-2 bg-gray-100 p-1 rounded">"{message.type}"</code>
-								</td>
+									<td className="p-2 border-r text-left">
+										<code className="ml-2 bg-gray-100 p-1 rounded">"{message.type}"</code>
+									</td>
 
-								<td className="p-2 border-r text-left">
-									<div className="truncate w-80 ">
-										<code>{JSON.stringify(message.message)}</code>
-									</div>
-								</td>
+									<td className="p-2 border-r text-left">
+										<div className="truncate w-80 ">
+											<code>{JSON.stringify(message.message)}</code>
+										</div>
+									</td>
 
-								<td className="p-2 text-xs">
-									<Timestamp date={message.now} />
-								</td>
-							</tr>
-						))}
+									<td className="p-2 text-xs">
+										<Timestamp date={message.now} />
+									</td>
+								</tr>
+							))}
 
 						</tbody>
 					</table>}
@@ -250,49 +256,49 @@ export function InspectConnection({
 						</thead>
 
 						<tbody>
-						{(connection.events.length === 0) &&
-							<tr className={"p-2 border-b"}>
-								<td colSpan={3} className="p-2">No events</td>
-							</tr>}
+							{(connection.events.length === 0) &&
+								<tr className={"p-2 border-b"}>
+									<td colSpan={3} className="p-2">No events</td>
+								</tr>}
 
-						{(connection.events).slice(0, MAX_TABLE_ROWS).map((message, i) => (
-							<tr key={i+'-'+message.now} className={"border-b " + (
-								(message.eventType === "close" || message.eventType === "error")
-									? "bg-yellow-100"
-									: (message.eventType === "in")
-										? "bg-red-100"
-										: "bg-green-100"
-							)}>
-								<td className="p-2">
-
-									{ (message.eventType === "close" || message.eventType === "error")
-										? <span className="inline text-red-600 text-base">🅧</span>
+							{(connection.events).slice(0, MAX_TABLE_ROWS).map((message, i) => (
+								<tr key={i + '-' + message.now} className={"border-b " + (
+									(message.eventType === "close" || message.eventType === "error")
+										? "bg-yellow-100"
 										: (message.eventType === "in")
+											? "bg-red-100"
+											: "bg-green-100"
+								)}>
+									<td className="p-2">
+
+										{(message.eventType === "close" || message.eventType === "error")
+											? <span className="inline text-red-600 text-base">🅧</span>
+											: (message.eventType === "in")
 												? <span className="inline text-red-600 text-base">↓</span>
 												: <span className="inline text-green-600 text-base">↑</span>}
 
-								</td>
+									</td>
 
-								<td className="p-2 border-r text-left">
-									<code className="ml-2 bg-gray-100 p-1 rounded">"{message.type}"</code>
-								</td>
+									<td className="p-2 border-r text-left">
+										<code className="ml-2 bg-gray-100 p-1 rounded">"{message.type}"</code>
+									</td>
 
-								<td className="p-2 border-r text-left">
-									<div className="truncate w-60 overflow-hidden text-ellipsis">
+									<td className="p-2 border-r text-left">
+										<div className="truncate w-60 overflow-hidden text-ellipsis">
 											{(Array.isArray(message.message))
 												? <code className="italic">({message.message.length} bytes) {JSON.stringify(message.message)}</code>
-												: typeof(message.message) === "string"
+												: typeof (message.message) === "string"
 													? <code>{message.message}</code>
 													: <code className="italic">{JSON.stringify(message.message)}</code>
 											}
-									</div>
-								</td>
+										</div>
+									</td>
 
-								<td className="p-2 text-xs">
-									<Timestamp date={message.now} />
-								</td>
-							</tr>
-						))}
+									<td className="p-2 text-xs">
+										<Timestamp date={message.now} />
+									</td>
+								</tr>
+							))}
 
 						</tbody>
 					</table></div>}
