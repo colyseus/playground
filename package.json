@@ -11,6 +11,7 @@
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "colyseus.js": "^0.15.8",
+    "jsoneditor": "^9.10.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-flatpickr": "^3.10.13",
@@ -47,6 +48,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jsoneditor": "^9.9.0",
     "tailwindcss": "^3.3.2"
   }
 }

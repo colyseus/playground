@@ -1,7 +1,10 @@
 import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
 import { Connection, roomsBySessionId, messageTypesByRoom } from "../utils/Types";
-import { Timestamp } from "./Timestamp";
+import { Timestamp } from "../elements/Timestamp";
+
+import { JSONEditor } from "../elements/JSONEditor";
+import * as JSONEditorModule from "jsoneditor";
 
 enum InspectTab {
 	MESSAGES = "messages",
@@ -47,11 +50,14 @@ export function InspectConnection({
 	const messageTypes = messageTypesByRoom[room.name];
 	if (!messageTypes) { throw new Error("messageTypes not found for room: " + room.name); }
 
+	// state
 	const [allMessages, setAllMessages] = useState((connection.messages) as any[]);
 	const [messageType, setMessageType] = useState(messageTypes[0]);
 	const [message, setMessage] = useState("{}");
+	const [isSendMessageEnabled, setSendMessageEnabled] = useState(true);
 	const [selectedTab, setSelectedTab] = useState(lastTabSelected)
 	const [currentError, setCurrentError] = useState("");
+
 
 	// TODO: allow sending message of any type
 	const hasWildcardMessageType = messageTypes.indexOf("*") >= 0;
@@ -60,8 +66,11 @@ export function InspectConnection({
 	const handleMessageTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
 		setMessageType(e.target.value);
 
-	const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-		setMessage(e.target.value);
+	const onChangeMessage = (text: string) =>
+		setMessage(text);
+
+	const onMessageValidationError = (errors: ReadonlyArray<JSONEditorModule.SchemaValidationError | JSONEditorModule.ParseError>) =>
+		setSendMessageEnabled(errors.length === 0);
 
 	const handleSelectTab = (e: React.MouseEvent<HTMLButtonElement>) => {
 		lastTabSelected = e.currentTarget.value as InspectTab;
@@ -91,7 +100,7 @@ export function InspectConnection({
 	const sendMessage = () => {
 		try {
 			const now = new Date();
-			const payload = JSON.parse(message);
+			const payload = JSON.parse(message || "{}");
 
 			const newMessage = { type: messageType, message: payload, out: true, now, };
 			setAllMessages([newMessage, ...allMessages]);
@@ -118,12 +127,27 @@ export function InspectConnection({
 					</div>
 
 					<div className="flex mt-2 grow pr-2">
-						<textarea data-gramm="false" /* disable grammarly extension */
-							name="message" id="message" className="border border-gray-300 w-80 font-mono p-1.5 rounded w-full" rows={1} onChange={handleMessageChange} value={message} />
+
+						<JSONEditor
+							text={message}
+							onChangeText={onChangeMessage}
+							onValidationError={onMessageValidationError}
+							maxLines={2}
+							mode="code"
+							search={false}
+							statusBar={false}
+							navigationBar={false}
+							mainMenuBar={false}
+							className={"h-10 overflow-hidden rounded border " + (isSendMessageEnabled ? "border-gray-300" : "border-red-300")}
+						/>
+
 					</div>
 
 					<div className="flex mt-2">
-						<button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={sendMessage}>Send message</button>
+						<button
+							className="bg-purple-500 transition disabled:opacity-50 enabled:hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+							disabled={!isSendMessageEnabled}
+							onClick={sendMessage}>Send message</button>
 					</div>
 				</div>
 			</div>

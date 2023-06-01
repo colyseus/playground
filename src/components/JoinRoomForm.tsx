@@ -3,6 +3,8 @@ import { useState } from "react";
 import { global, client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
 import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
 import { LimitedArray } from "../utils/LimitedArray";
+import { JSONEditor } from "../elements/JSONEditor";
+import * as JSONEditorModule from "jsoneditor";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -16,9 +18,10 @@ export function JoinRoomForm ({
 	const [selectedRoomName, setRoomName] = useState(roomNames[0]);
 	const [selectedRoomId, setRoomId] = useState(""); // only for joinById
 	const [selectedMethod, setMethod] = useState(Object.keys(matchmakeMethods)[0] as keyof Client);
-	const [options, setOptions] = useState("{}");
+	const [optionsText, setOptionsJSON] = useState("{}");
 	const [isLoading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [isButtonEnabled, setButtonEnabled] = useState(true);
 
 	// remote stats
 	const [roomCount, setRoomCount] = useState({} as {[key: string]: number});
@@ -32,12 +35,19 @@ export function JoinRoomForm ({
 			catch((e) => console.error(e));
 	}
 
+	const onChangeOptions = (json: any) => setOptionsJSON(json);
+
 	const handleSelectedRoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (selectedMethod === "joinById") {
 			setRoomId(e.target.value);
 		} else {
 			setRoomName(e.target.value);
 		}
+	}
+
+	const onOptionsValidationError = (errors: ReadonlyArray<JSONEditorModule.SchemaValidationError | JSONEditorModule.ParseError>) => {
+		setButtonEnabled(errors.length === 0);
+		// setError(error);
 	}
 
 	const handleSelectedMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,11 +60,14 @@ export function JoinRoomForm ({
 				then((response) => response.json()).
 				then((rooms) => setRoomsById(rooms)).
 				catch((e) => console.error(e));
+
+		} else {
+			setButtonEnabled(true);
 		}
 	}
 
 	const handleOptionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-		setOptions(e.target.value);
+		setOptionsJSON(e.target.value);
 
 	const onJoinClick = async () => {
 		const method = selectedMethod;
@@ -64,7 +77,7 @@ export function JoinRoomForm ({
 		setLoading(true);
 
 		try {
-			await client[method](roomName, JSON.parse(options));
+			await client[method](roomName, JSON.parse(optionsText || "{}"));
 
 		} catch (e: any) {
 			const error = e.target?.statusText || e.message || "server is down.";
@@ -141,10 +154,6 @@ export function JoinRoomForm ({
 			fetchRoomStats();
 		});
 	});
-
-	// create new connection to server
-	const createClientConnection = async (method: keyof Client, roomName: string, options: string) => {
-	};
 
 	return (<>
 		<h2 className="text-xl font-semibold">Join a room</h2>
@@ -230,21 +239,37 @@ export function JoinRoomForm ({
 			</>
 		}
 
-		<p className="mt-4"><strong>Join options</strong></p>
-		<div className="flex mt-2">
-			<textarea data-gramm="false" /* disable grammarly extension */
-				name="options" id="options" className="border w-full border-gray-300 w-80 font-mono p-1.5 rounded" rows={2} onChange={handleOptionsChange} value={options} />
-		</div>
+		{/* Do not show "join options" if joining by room ID AND no room is available. */}
+		{(selectedMethod === "joinById" && Object.keys(roomsById).length === 0)
+			? null
+			: <>
+				<p className="mt-4"><strong>Join options</strong></p>
+				<JSONEditor
+					text={optionsText}
+					onChangeText={onChangeOptions}
+					onValidationError={onOptionsValidationError}
+					mode="code"
+					search={false}
+					statusBar={false}
+					navigationBar={false}
+					mainMenuBar={false}
+					className={"mt-2 h-24 overflow-hidden rounded border " + (isButtonEnabled ? "border-gray-300" : "border-red-300")}
+				/>
 
-		<div className="flex mt-4">
-			<button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={onJoinClick}>
-				{matchmakeMethods[selectedMethod]}
-			</button>
-			<div className="ml-1 p-2 inline italic">
-				{isLoading && "Connecting..."}
-				{!isLoading && error &&
-					<span className="text-red-500"><strong>Error:</strong> {error}</span>}
-			</div>
-		</div>
+				<div className="flex mt-4">
+					<button
+						className="bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+						onClick={onJoinClick}
+						disabled={!isButtonEnabled}>
+						{matchmakeMethods[selectedMethod]}
+					</button>
+					<div className="ml-1 p-2 inline italic">
+						{isLoading && "Connecting..."}
+						{!isLoading && error &&
+							<span className="text-red-500"><strong>Error:</strong> {error}</span>}
+					</div>
+				</div>
+			</>}
+
 	</>);
 }
