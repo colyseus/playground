@@ -131,6 +131,10 @@ export function InspectConnection({
 					</button>
 				</div>
 
+				{/* Display reconnection error */}
+				{(currentError) &&
+					<div className="bg-red-500 text-white py-2 px-3 rounded text-sm my-2"><strong>Error:</strong> {currentError}</div>}
+
 				<p className="mt-4">
 					<strong>Send a message:</strong>
 				</p>
@@ -172,10 +176,6 @@ export function InspectConnection({
 						</div> }
 
 			</div>
-
-			{/* Display reconnection error */}
-			{(currentError) &&
-				<div className="bg-red-500 text-white py-2 px-3 rounded text-sm my-2"><strong>Error:</strong> {currentError}</div>}
 
 			<div className="border-b border-gray-200">
 				<ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500">
