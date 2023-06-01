@@ -5,6 +5,7 @@ import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/Colys
 import { LimitedArray } from "../utils/LimitedArray";
 import { JSONEditor } from "../elements/JSONEditor";
 import * as JSONEditorModule from "jsoneditor";
+import { RoomWithId } from "../elements/RoomWithId";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -113,8 +114,7 @@ export function JoinRoomForm ({
 				type: data[1],
 				message: data[2],
 				now: data[3]
-			}))),
-			error: undefined,
+			})))
 		};
 
 		// prepend received messages
@@ -194,7 +194,7 @@ export function JoinRoomForm ({
 									checked={selectedRoomName === roomName}
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
-								<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900">
+								<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900 cursor-pointer hover:opacity-80 transition">
 									<code className="bg-gray-100 p-1">{roomName}</code>
 									{(roomCount[roomName] !== undefined) &&
 										<span className="group relative ml-1 text-sm text-gray-500 cursor-help">
@@ -227,11 +227,8 @@ export function JoinRoomForm ({
 									checked={selectedRoomId === roomId}
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
-								<label htmlFor={"roomid_" + roomId} className="ml-2 text-sm font-medium text-gray-900">
-									<code className={"p-1 rounded text-white " + getRoomColorClass(roomId)}>{roomId}</code>
-									<span className="relative ml-1 text-sm text-gray-500">
-										({roomsById[roomId].name})
-									</span>
+								<label htmlFor={"roomid_" + roomId} className="cursor-pointer hover:opacity-80 transition">
+									<RoomWithId name={roomsById[roomId].name} roomId={roomId} />
 								</label>
 						</div>
 					))}

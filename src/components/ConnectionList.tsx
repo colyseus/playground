@@ -1,6 +1,7 @@
 import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
 import { Connection, allRoomColors, getRoomColorClass, roomsBySessionId } from "../utils/Types";
+import { RoomWithId } from "../elements/RoomWithId";
 
 function ConnectionItem({
 	connection,
@@ -14,36 +15,26 @@ function ConnectionItem({
 	const room = roomsBySessionId[connection.sessionId];
 	const handleClick = () => onClick(connection);
 
-	const allowSelection = (connection.error === undefined);
-
 	return <div
-		className={"w-full p-2 text-sm rounded " + (
+		className={"w-full p-2 text-sm rounded text-gray-500" + (
+			(!connection.isConnected)
+				? (isSelected) ? " bg-red-500" :  " bg-red-100"
+				: " "
+		) + (
 			(isSelected)
-				? "bg-purple-600"
-				: (allowSelection)
-					? "hover:bg-purple-100 cursor-pointer"
-					: ""
+				? " bg-green-500 text-white"
+				: " hover:bg-gray-100 cursor-pointer"
 		)}
-		onClick={(isSelected || !allowSelection) ? undefined : handleClick}
+		onClick={(isSelected) ? undefined : handleClick}
 	>
-		{(connection.error)
-			? <>
-				<span className="mr-1 font-semibold bg-red-500 text-white text-xs rounded p-1">FAILED</span>
-				<span className="text-red-500"><strong>Error:</strong> {connection.error}</span>
+		<RoomWithId name={room.name} roomId={room.roomId} />
 
-			</>
-			: <>
-				{(connection.isConnected)
-					? <span className="font-semibold bg-green-500 text-white text-xs rounded p-1">OPEN</span>
-					: <span className="font-semibold bg-red-500 text-white text-xs rounded p-1">CLOSED</span>}
+		{(connection.isConnected)
+			? <span className="ml-2 font-semibold bg-green-500 text-white rounded p-1">↔</span>
+			: <span className="ml-2 font-semibold bg-red-500 text-white rounded p-1">🅧</span>}
 
-				<span className="ml-2 bg-orange-500 p-1 rounded text-white font-semibold">{room.name}</span>
-				<code className="ml-2 bg-gray-100 p-1 rounded">sessionId: {connection.sessionId}</code>
-				<code className={getRoomColorClass(room.roomId) + " text-white ml-2 p-1 rounded"}>roomId: {room.roomId}</code>
-			</>}
-
+		<code className="ml-2 bg-gray-100 text-gray-700 p-1 rounded">sessionId: {connection.sessionId}</code>
 	</div>
-
 }
 
 export function ConnectionList({

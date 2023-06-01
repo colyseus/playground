@@ -5,7 +5,6 @@ export type Connection = {
   isConnected: boolean;
   messages: any[];
   events: any[];
-  error?: any;
 };
 
 export const endpoint = "http://localhost:2567";
