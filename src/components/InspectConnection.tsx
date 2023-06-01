@@ -40,11 +40,9 @@ const MAX_TABLE_ROWS = 25;
 export function InspectConnection({
 	client,
 	connection,
-	setSelectedConnection,
 }: {
 	client: Client,
 	connection: Connection,
-	setSelectedConnection: (connection: Connection) => void,
 }) {
 	const room = roomsBySessionId[connection.sessionId];
 	const messageTypes = messageTypesByRoom[room.name];

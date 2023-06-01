@@ -1,5 +1,5 @@
 import { Client, Room } from "colyseus.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { global, client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
 import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
 import { LimitedArray } from "../utils/LimitedArray";
@@ -9,10 +9,12 @@ import { RoomWithId } from "../elements/RoomWithId";
 
 export function JoinRoomForm ({
 	roomNames,
+	roomCount,
 	onConnectionSuccessful,
 	onDisconnection,
 } : {
 	roomNames: string[]
+	roomCount: {[key: string]: number},
 	onConnectionSuccessful: (connection: Connection) => void
 	onDisconnection: (sessionId: string) => void
 }) {
@@ -25,16 +27,13 @@ export function JoinRoomForm ({
 	const [isButtonEnabled, setButtonEnabled] = useState(true);
 
 	// remote stats
-	const [roomCount, setRoomCount] = useState({} as {[key: string]: number});
 	const [roomsById, setRoomsById] = useState({} as {[key: string]: {name: string, metadata: any}});
 
-	// get room name / room count
-	const fetchRoomStats = () => {
-		fetch(`${endpoint}/playground/stats`).
-			then((response) => response.json()).
-			then((stats) => setRoomCount(stats)).
-			catch((e) => console.error(e));
-	}
+	// // auto-fetch room stats at every 5 seconds
+	// useEffect(() => {
+	// 	const fetchInterval = setInterval(fetchRoomStats, 5000);
+	// 	return () => clearInterval(fetchInterval);
+	// }, []);
 
 	const onChangeOptions = (json: any) => setOptionsJSON(json);
 
@@ -149,9 +148,6 @@ export function JoinRoomForm ({
 
 			// append connection to connections list
 			onConnectionSuccessful(connection);
-
-			// fetch room count immediatelly after joining
-			fetchRoomStats();
 		});
 	});
 
@@ -194,7 +190,7 @@ export function JoinRoomForm ({
 									checked={selectedRoomName === roomName}
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
-								<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900 cursor-pointer hover:opacity-80 transition">
+								<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
 									<code className="bg-gray-100 p-1">{roomName}</code>
 									{(roomCount[roomName] !== undefined) &&
 										<span className="group relative ml-1 text-sm text-gray-500 cursor-help">
@@ -227,7 +223,7 @@ export function JoinRoomForm ({
 									checked={selectedRoomId === roomId}
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
-								<label htmlFor={"roomid_" + roomId} className="cursor-pointer hover:opacity-80 transition">
+								<label htmlFor={"roomid_" + roomId} className="cursor-pointer">
 									<RoomWithId name={roomsById[roomId].name} roomId={roomId} />
 								</label>
 						</div>
@@ -255,7 +251,7 @@ export function JoinRoomForm ({
 
 				<div className="flex mt-4">
 					<button
-						className="bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+						className="bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition"
 						onClick={onJoinClick}
 						disabled={!isButtonEnabled}>
 						{matchmakeMethods[selectedMethod]}

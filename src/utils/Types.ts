@@ -12,7 +12,7 @@ export const client = new Client(endpoint);
 
 export const global = { connections: [] as Connection[], };
 
-export const roomsBySessionId: { [key: string]: Room } = {};
+export const roomsBySessionId: { [sessionId: string]: Room } = {};
 export const messageTypesByRoom: { [key: string]: string[] } = {};
 
 let currentColor = -1;

@@ -15,9 +15,11 @@ enum ServerState {
 
 export function Playground() {
 	const [serverState, setServerState] = useState(ServerState.CONNECTING);
-	const [roomNames, setRoomNames] = useState([]);
 	const [connections, setConnections] = useState([] as Connection[]);
 	const [selectedConnection, setSelectedConnection] = useState(undefined as unknown as Connection);
+
+	const [roomNames, setRoomNames] = useState([]);
+	const [roomCount, setRoomCount] = useState({} as {[key: string]: number});
 
 	const onConnectionSuccessful = (connection: Connection) => {
 		if (global.connections.indexOf(connection) !== -1) {
@@ -35,16 +37,28 @@ export function Playground() {
 				setSelectedConnection(connection);
 			}
 		}
+
+		// fetch room count immediatelly after joining
+		fetchRoomStats();
 	}
 
 	const onDisconnection = function (sessionId: string) {
 		const connection = global.connections.find((connection) => connection.sessionId === sessionId);
-		connection!.isConnected = false;
-		setConnections([...global.connections]);
+		// when using "leave all + clear" connection won't exist anymore
+		if (connection) {
+			connection!.isConnected = false;
+			setConnections([...global.connections]);
+		}
 	}
 
-	// fetch rooms on mount
-	useEffect(() => {
+	const clearConnections = () => {
+		global.connections = [];
+		fetchRoomStats();
+		setConnections(global.connections);
+		setSelectedConnection(undefined as unknown as Connection);
+	}
+
+	const fetchAvailableRoomTypes = () => {
 		fetch(`${endpoint}/playground/rooms`).
 			then((response) => response.json()).
 			then((rooms) => {
@@ -55,7 +69,18 @@ export function Playground() {
 				setServerState(ServerState.OFFLINE);
 				console.error(e)
 			});
-	}, []);
+	}
+
+	// get room name / room count
+	const fetchRoomStats = () => {
+		fetch(`${endpoint}/playground/stats`).
+			then((response) => response.json()).
+			then((stats) => setRoomCount(stats)).
+			catch((e) => console.error(e));
+	}
+
+	// fetch available room types on mount
+	useEffect(() => fetchAvailableRoomTypes(), []);
 
 	return <>
 		<div className="grid grid-cols-2 gap-6">
@@ -66,6 +91,7 @@ export function Playground() {
 				{(serverState === ServerState.CONNECTED) &&
 					<JoinRoomForm
 						roomNames={roomNames}
+						roomCount={roomCount}
 						onConnectionSuccessful={onConnectionSuccessful}
 						onDisconnection={onDisconnection}
 					/>}
@@ -75,6 +101,7 @@ export function Playground() {
 				<ConnectionList
 					connections={connections}
 					selectedConnection={selectedConnection}
+					clearConnections={clearConnections}
 					setSelectedConnection={setSelectedConnection}
 					/>
 			</div>
@@ -85,14 +112,18 @@ export function Playground() {
 		<div className="mt-6 bg-white shadow rounded grid grid-cols-2 min-h-screen">
 
 			<div className="p-6">
-				<h2 className="text-xl font-semibold">Inspect connection</h2>
+				<h2 className="text-xl font-semibold">
+					Inspect connection
+					{(selectedConnection)
+						? <span> (<code className="bg-gray-100 text-sm text-gray-700 p-1 rounded">sessionId: {selectedConnection.sessionId}</code>)</span>
+						: null}
+
+				</h2>
 				{(selectedConnection)
 					? <InspectConnection
 							key={selectedConnection.sessionId}
 							client={client}
-							connection={selectedConnection}
-							setSelectedConnection={setSelectedConnection}
-							/>
+							connection={selectedConnection} />
 					: <p><em>(Please select an active client connection)</em></p>}
 			</div>
 

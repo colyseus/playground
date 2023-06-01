@@ -1,6 +1,6 @@
 import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
-import { Connection, allRoomColors, getRoomColorClass, roomsBySessionId } from "../utils/Types";
+import { Connection, allRoomColors, getRoomColorClass, global, roomsBySessionId } from "../utils/Types";
 import { RoomWithId } from "../elements/RoomWithId";
 
 function ConnectionItem({
@@ -22,11 +22,15 @@ function ConnectionItem({
 				: " "
 		) + (
 			(isSelected)
-				? " bg-green-500 text-white"
+				? " opacity-100 bg-green-500 text-white shadow"
 				: " hover:bg-gray-100 cursor-pointer"
 		)}
 		onClick={(isSelected) ? undefined : handleClick}
 	>
+		{/* {(isSelected)
+			? <span className="font-semibold">▶</span>
+			: null } */}
+
 		<RoomWithId name={room.name} roomId={room.roomId} />
 
 		{(connection.isConnected)
@@ -40,18 +44,38 @@ function ConnectionItem({
 export function ConnectionList({
 	connections,
 	selectedConnection,
+	clearConnections,
 	setSelectedConnection,
 } : {
 	connections: Connection[],
 	selectedConnection: Connection,
+	clearConnections: () => void,
 	setSelectedConnection: (connection: Connection) => void,
 }) {
 
 	const onClick = (connection: Connection) =>
 		setSelectedConnection(connection)
 
+	const handleLeaveAll = () => {
+		// leave all rooms
+		for (let roomId in roomsBySessionId) {
+			roomsBySessionId[roomId].leave();
+		}
+		// clear connections
+		clearConnections();
+	};
+
 	return (<>
-		<h2 className="text-xl font-semibold mb-2">Client connections</h2>
+		<h2 className="text-xl font-semibold mb-2">
+			Client connections
+
+			{(connections.length > 0)
+				? <button className="float-right text-sm bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 py-1 rounded" onClick={handleLeaveAll}>
+						<svg className="w-4 mr-1 inline" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"></path></svg>
+						Leave all + Clear
+					</button>
+				: null}
+		</h2>
 
 		{/* Workaround to emit CSS for all available colors */}
 		<span className="bg-lime-800 bg-green-800 bg-emerald-800 bg-teal-800 bg-cyan-800 bg-sky-800 bg-blue-800 bg-indigo-800 bg-violet-800 bg-fuchsia-800 bg-pink-800 bg-rose-800"></span>
