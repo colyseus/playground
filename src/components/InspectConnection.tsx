@@ -56,7 +56,6 @@ export function InspectConnection({
 	const [selectedTab, setSelectedTab] = useState(lastTabSelected)
 	const [currentError, setCurrentError] = useState("");
 
-
 	// TODO: allow sending message of any type
 	const hasWildcardMessageType = messageTypes.indexOf("*") >= 0;
 	const allowReconnect = !connection.isConnected;
@@ -150,7 +149,7 @@ export function InspectConnection({
 								</select>
 							</div>
 
-							<div className="flex mt-2 grow pr-2">
+							<div className="flex ml-2 mt-2 grow pr-2">
 								<JSONEditor
 									text={message}
 									onChangeText={onChangeMessage}

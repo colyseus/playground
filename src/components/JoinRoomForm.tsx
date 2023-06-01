@@ -1,4 +1,4 @@
-import { Client, Room } from "colyseus.js";
+import { Client, Room, RoomAvailable } from "colyseus.js";
 import { useEffect, useState } from "react";
 import { global, client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
 import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
@@ -9,12 +9,14 @@ import { RoomWithId } from "../elements/RoomWithId";
 
 export function JoinRoomForm ({
 	roomNames,
-	roomCount,
+	roomsById,
+	roomsByType,
 	onConnectionSuccessful,
 	onDisconnection,
 } : {
 	roomNames: string[]
-	roomCount: {[key: string]: number},
+	roomsById: { [key: string]: RoomAvailable & { locked: boolean } },
+	roomsByType: {[key: string]: number},
 	onConnectionSuccessful: (connection: Connection) => void
 	onDisconnection: (sessionId: string) => void
 }) {
@@ -25,9 +27,6 @@ export function JoinRoomForm ({
 	const [isLoading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [isButtonEnabled, setButtonEnabled] = useState(true);
-
-	// remote stats
-	const [roomsById, setRoomsById] = useState({} as {[key: string]: {name: string, metadata: any}});
 
 	// // auto-fetch room stats at every 5 seconds
 	// useEffect(() => {
@@ -54,14 +53,8 @@ export function JoinRoomForm ({
 		const method = e.target.value as keyof Client;
 		setMethod(method);
 
-		// fetch rooms by ID
-		if (method === "joinById") {
-			fetch(`${endpoint}/playground/rooms_by_id`).
-				then((response) => response.json()).
-				then((rooms) => setRoomsById(rooms)).
-				catch((e) => console.error(e));
-
-		} else {
+		// always enable button for joinById
+		if (method !== "joinById") {
 			setButtonEnabled(true);
 		}
 	}
@@ -123,13 +116,15 @@ export function JoinRoomForm ({
 				message,
 				in: true,
 				now: new Date()
-			})
+			});
 		});
 
-		room.onLeave((code) => onDisconnection(room.sessionId));
+		room.onLeave((code) =>
+			onDisconnection(room.sessionId));
 
 		// devmode restart event
-		room.onMessage(DEVMODE_RESTART, (data: any[]) => onDisconnection(room.sessionId));
+		room.onMessage(DEVMODE_RESTART, (data: any[]) =>
+			onDisconnection(room.sessionId));
 
 		// raw events from SDK
 		room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
@@ -192,10 +187,10 @@ export function JoinRoomForm ({
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
 								<label htmlFor={"name_" + roomName} className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
 									<code className="bg-gray-100 p-1">{roomName}</code>
-									{(roomCount[roomName] !== undefined) &&
+									{(roomsByType[roomName] !== undefined) &&
 										<span className="group relative ml-1 text-sm text-gray-500 cursor-help">
-											({roomCount[roomName]})
-											<span className="absolute left-8 w-32 scale-0 rounded bg-gray-800 p-2 text-xs text-white group-hover:scale-100">{roomCount[roomName] + " active room(s)"}</span>
+											({roomsByType[roomName]})
+											<span className="absolute left-8 w-32 scale-0 rounded bg-gray-800 p-2 text-xs text-white group-hover:scale-100">{roomsByType[roomName] + " active room(s)"}</span>
 										</span>}
 
 								</label>
@@ -223,8 +218,16 @@ export function JoinRoomForm ({
 									checked={selectedRoomId === roomId}
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
-								<label htmlFor={"roomid_" + roomId} className="cursor-pointer">
+								<label htmlFor={"roomid_" + roomId} className="ml-2 cursor-pointer text-sm">
+									{(roomsById[roomId].locked)
+										? <svg className="inline text-xs mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>
+										: <svg className="inline text-xs mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512"><path d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80v48c0 17.7 14.3 32 32 32s32-14.3 32-32V144C576 64.5 511.5 0 432 0S288 64.5 288 144v48H64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H352V144z"/></svg> }
+
 									<RoomWithId name={roomsById[roomId].name} roomId={roomId} />
+
+									<span className="text-gray-500 text-sm ml-1">
+										({roomsById[roomId].clients} clients)
+									</span>
 								</label>
 						</div>
 					))}

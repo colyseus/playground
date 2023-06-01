@@ -1,5 +1,5 @@
-import { Client, Room } from "colyseus.js";
 import { useEffect, useState } from "react";
+import { RoomAvailable } from "colyseus.js";
 
 import { InspectConnection } from "../components/InspectConnection";
 import { client, endpoint, Connection, global } from "../utils/Types";
@@ -18,8 +18,10 @@ export function Playground() {
 	const [connections, setConnections] = useState([] as Connection[]);
 	const [selectedConnection, setSelectedConnection] = useState(undefined as unknown as Connection);
 
+	// remote stats
 	const [roomNames, setRoomNames] = useState([]);
-	const [roomCount, setRoomCount] = useState({} as {[key: string]: number});
+	const [roomsById, setRoomsById] = useState({} as { [key: string]: RoomAvailable & { locked: boolean } });
+	const [roomsByType, setRoomsByType] = useState({} as {[key: string]: number});
 
 	const onConnectionSuccessful = (connection: Connection) => {
 		if (global.connections.indexOf(connection) !== -1) {
@@ -48,6 +50,7 @@ export function Playground() {
 		if (connection) {
 			connection!.isConnected = false;
 			setConnections([...global.connections]);
+			fetchRoomStats();
 		}
 	}
 
@@ -75,7 +78,10 @@ export function Playground() {
 	const fetchRoomStats = () => {
 		fetch(`${endpoint}/playground/stats`).
 			then((response) => response.json()).
-			then((stats) => setRoomCount(stats)).
+			then((stats) => {
+				setRoomsByType(stats.roomsByType);
+				setRoomsById(stats.roomsById);
+			}).
 			catch((e) => console.error(e));
 	}
 
@@ -91,7 +97,8 @@ export function Playground() {
 				{(serverState === ServerState.CONNECTED) &&
 					<JoinRoomForm
 						roomNames={roomNames}
-						roomCount={roomCount}
+						roomsByType={roomsByType}
+						roomsById={roomsById}
 						onConnectionSuccessful={onConnectionSuccessful}
 						onDisconnection={onDisconnection}
 					/>}
