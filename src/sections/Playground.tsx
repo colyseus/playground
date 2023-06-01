@@ -78,7 +78,16 @@ export function Playground() {
 	}
 
 	// fetch available room types on mount
-	useEffect(() => fetchRoomStats(), []);
+	// FIXME: why is useEffect being called twice?
+	useEffect(() => {
+		fetchRoomStats();
+
+		const retryWhenOfflineInterval = window.setInterval(() => {
+			if (serverState === ServerState.OFFLINE) { fetchRoomStats(); }
+		}, 1000);
+
+		return () => window.clearInterval(retryWhenOfflineInterval);
+	}, []);
 
 	return <>
 		<div className="grid grid-cols-2 gap-6">

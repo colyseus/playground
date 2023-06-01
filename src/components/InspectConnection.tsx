@@ -49,12 +49,15 @@ export function InspectConnection({
 	if (!messageTypes) { throw new Error("messageTypes not found for room: " + room.name); }
 
 	// state
-	const [allMessages, setAllMessages] = useState((connection.messages) as any[]);
-	const [messageType, setMessageType] = useState(messageTypes[0]);
 	const [message, setMessage] = useState("{}");
+	const [messageType, setMessageType] = useState(messageTypes[0]);
 	const [isSendMessageEnabled, setSendMessageEnabled] = useState(true);
 	const [selectedTab, setSelectedTab] = useState(lastTabSelected)
 	const [currentError, setCurrentError] = useState("");
+
+	// in/out messages & events
+	const [messages, setMessages] = useState((connection.messages) as any[]);
+	const [events, setEvents] = useState((connection.events) as any[]);
 
 	// TODO: allow sending message of any type
 	const hasWildcardMessageType = messageTypes.indexOf("*") >= 0;
@@ -100,7 +103,7 @@ export function InspectConnection({
 			const payload = JSON.parse(message || "{}");
 
 			const newMessage = { type: messageType, message: payload, out: true, now, };
-			setAllMessages([newMessage, ...allMessages]);
+			setMessages([newMessage, ...messages]);
 			connection.messages.unshift(newMessage);
 
 			room.send(messageType, payload);
@@ -109,6 +112,15 @@ export function InspectConnection({
 			displayError(e.message);
 		}
 	};
+
+	//
+	// FIXME: (there must be a cleaner way to do this!)
+	// bind re-render of messages and events
+	//
+	useEffect(() => {
+		connection.events.onChange = () => setEvents([...connection.events]);
+		connection.messages.onChange = () => setMessages([...connection.messages]);
+	}, []);
 
 	return (
 		<>
@@ -207,12 +219,12 @@ export function InspectConnection({
 
 						<tbody>
 
-							{(allMessages.length === 0) &&
+							{(messages.length === 0) &&
 								<tr className={"p-2 border-b"}>
 									<td colSpan={3} className="p-2">No messages</td>
 								</tr>}
 
-							{(allMessages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
+							{(messages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
 								<tr key={i + '-' + message.now} className={"border-b " + (message.in ? "bg-red-100" : "bg-green-100")}>
 									<td className="p-2">
 										{message.in &&
@@ -253,46 +265,46 @@ export function InspectConnection({
 						</thead>
 
 						<tbody>
-							{(connection.events.length === 0) &&
+							{(events.length === 0) &&
 								<tr className={"p-2 border-b"}>
 									<td colSpan={3} className="p-2">No events</td>
 								</tr>}
 
-							{(connection.events).slice(0, MAX_TABLE_ROWS).map((message, i) => (
-								<tr key={i + '-' + message.now} className={"border-b " + (
-									(message.eventType === "close" || message.eventType === "error")
+							{(events).slice(0, MAX_TABLE_ROWS).map((event, i) => (
+								<tr key={i + '-' + event.now} className={"border-b " + (
+									(event.eventType === "close" || event.eventType === "error")
 										? "bg-yellow-100"
-										: (message.eventType === "in")
+										: (event.eventType === "in")
 											? "bg-red-100"
 											: "bg-green-100"
 								)}>
 									<td className="p-2">
 
-										{(message.eventType === "close" || message.eventType === "error")
+										{(event.eventType === "close" || event.eventType === "error")
 											? <span className="inline text-red-600 text-base">🅧</span>
-											: (message.eventType === "in")
+											: (event.eventType === "in")
 												? <span className="inline text-red-600 text-base">↓</span>
 												: <span className="inline text-green-600 text-base">↑</span>}
 
 									</td>
 
 									<td className="p-2 border-r text-left">
-										<code className="ml-2 bg-gray-100 p-1 rounded">"{message.type}"</code>
+										<code className="ml-2 bg-gray-100 p-1 rounded">"{event.type}"</code>
 									</td>
 
 									<td className="p-2 border-r text-left">
 										<div className="truncate w-60 overflow-hidden text-ellipsis">
-											{(Array.isArray(message.message))
-												? <code className="italic">({message.message.length} bytes) {JSON.stringify(message.message)}</code>
-												: typeof (message.message) === "string"
-													? <code>{message.message}</code>
-													: <code className="italic">{JSON.stringify(message.message)}</code>
+											{(Array.isArray(event.message))
+												? <code className="italic">({event.message.length} bytes) {JSON.stringify(event.message)}</code>
+												: typeof (event.message) === "string"
+													? <code>{event.message}</code>
+													: <code className="italic">{JSON.stringify(event.message)}</code>
 											}
 										</div>
 									</td>
 
 									<td className="p-2 text-xs">
-										<Timestamp date={message.now} />
+										<Timestamp date={event.now} />
 									</td>
 								</tr>
 							))}

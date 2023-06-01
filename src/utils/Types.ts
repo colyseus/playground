@@ -1,10 +1,11 @@
 import { Client, Room } from "colyseus.js";
+import { LimitedArray } from "./LimitedArray";
 
 export type Connection = {
   sessionId: string;
   isConnected: boolean;
-  messages: any[];
-  events: any[];
+  messages: LimitedArray;
+  events: LimitedArray;
 };
 
 export const endpoint = "http://localhost:2567";

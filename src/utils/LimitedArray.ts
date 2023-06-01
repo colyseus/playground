@@ -1,6 +1,11 @@
 const LIMITED_ARRAY_MAX_ITEMS = 50;
 
 export class LimitedArray<T = any> extends Array<T> {
+  // FIXME: this is a workaround!
+  // when JoinRoomForm modifies the array, onChange is triggered, so
+  // InspectConnection can re-render it
+  onChange?: () => void;
+
   constructor(
     public maxItems: number = LIMITED_ARRAY_MAX_ITEMS,
     ...items: T[]
@@ -15,6 +20,8 @@ export class LimitedArray<T = any> extends Array<T> {
       this.shift();
     }
 
+    if (this.onChange) this.onChange();
+
     return ret;
   }
 
@@ -24,6 +31,8 @@ export class LimitedArray<T = any> extends Array<T> {
     if (this.length > this.maxItems) {
       this.pop();
     }
+
+    if (this.onChange) this.onChange();
 
     return ret;
   }
