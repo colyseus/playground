@@ -61,12 +61,15 @@ export function Playground() {
 		setSelectedConnection(undefined as unknown as Connection);
 	}
 
-	const fetchAvailableRoomTypes = () => {
+	// get room name / room count
+	const fetchRoomStats = () => {
 		fetch(`${endpoint}/playground/rooms`).
 			then((response) => response.json()).
-			then((rooms) => {
+			then((stats) => {
 				setServerState(ServerState.CONNECTED);
-				setRoomNames(rooms);
+				setRoomNames(stats.rooms);
+				setRoomsByType(stats.roomsByType);
+				setRoomsById(stats.roomsById);
 			}).
 			catch((e) => {
 				setServerState(ServerState.OFFLINE);
@@ -74,19 +77,8 @@ export function Playground() {
 			});
 	}
 
-	// get room name / room count
-	const fetchRoomStats = () => {
-		fetch(`${endpoint}/playground/stats`).
-			then((response) => response.json()).
-			then((stats) => {
-				setRoomsByType(stats.roomsByType);
-				setRoomsById(stats.roomsById);
-			}).
-			catch((e) => console.error(e));
-	}
-
 	// fetch available room types on mount
-	useEffect(() => fetchAvailableRoomTypes(), []);
+	useEffect(() => fetchRoomStats(), []);
 
 	return <>
 		<div className="grid grid-cols-2 gap-6">

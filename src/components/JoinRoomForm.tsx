@@ -210,7 +210,7 @@ export function JoinRoomForm ({
 
 					{/* List room definitions */}
 					{(Object.keys(roomsById)).map((roomId) => (
-						<div key={roomId} className="flex items-center mr-4 mb-2">
+						<div key={roomId} className="flex items-center w-full mr-4 mb-2">
 								<input id={"roomid_" + roomId}
 									name="room_id"
 									type="radio"
@@ -219,14 +219,14 @@ export function JoinRoomForm ({
 									onChange={handleSelectedRoomChange}
 									className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2" />
 								<label htmlFor={"roomid_" + roomId} className="ml-2 cursor-pointer text-sm">
-									{(roomsById[roomId].locked)
-										? <svg className="inline text-xs mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>
-										: <svg className="inline text-xs mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512"><path d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80v48c0 17.7 14.3 32 32 32s32-14.3 32-32V144C576 64.5 511.5 0 432 0S288 64.5 288 144v48H64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H352V144z"/></svg> }
 
 									<RoomWithId name={roomsById[roomId].name} roomId={roomId} />
 
 									<span className="text-gray-500 text-sm ml-1">
-										({roomsById[roomId].clients} clients)
+										({(roomsById[roomId].locked)
+										? <svg className="inline text-xs mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>
+										: <svg className="inline text-xs mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512"><path d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80v48c0 17.7 14.3 32 32 32s32-14.3 32-32V144C576 64.5 511.5 0 432 0S288 64.5 288 144v48H64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H352V144z"/></svg> }
+									· {roomsById[roomId].clients} clients)
 									</span>
 								</label>
 						</div>
