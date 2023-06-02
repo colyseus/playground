@@ -18,11 +18,11 @@ function ConnectionItem({
 	return <div
 		className={"w-full p-2 text-sm rounded text-gray-500 transition " + (
 			(!connection.isConnected)
-				? (isSelected) ? " bg-purple-500" :  " bg-red-100"
+				? (isSelected) ? " bg-red-500" :  " bg-red-100"
 				: " "
 		) + (
 			(isSelected)
-				? " opacity-100 bg-purple-500 text-white shadow"
+				? " opacity-100 bg-green-500 text-white shadow"
 				: " hover:bg-gray-100 cursor-pointer"
 		)}
 		onClick={(isSelected) ? undefined : handleClick}
@@ -34,8 +34,8 @@ function ConnectionItem({
 		<RoomWithId name={room.name} roomId={room.roomId} />
 
 		{(connection.isConnected)
-			? <span className="ml-2 font-semibold text-green-700 px-0.5">↔</span>
-			: <span className="ml-2 font-semibold text-red-500 px-0.5">🅧</span>}
+			? <span className="ml-2 font-semibold bg-green-500 text-white rounded px-1.5 p-1">↔</span>
+			: <span className="ml-2 font-semibold bg-red-500 text-white rounded px-1.5 p-1">🅧</span>}
 
 		<code className="ml-2 bg-gray-100 text-gray-700 p-1 rounded">sessionId: {connection.sessionId}</code>
 	</div>
