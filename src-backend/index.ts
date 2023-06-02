@@ -6,7 +6,7 @@ import { allRoomNames } from "./colyseus.ext";
 export const playground = express.Router();
 
 // serve static frontend
-playground.use("/", express.static(path.resolve(__dirname, "..", "build", "static")));
+playground.use("/", express.static(path.resolve(__dirname, "..", "build")));
 
 // expose matchmaking stats
 playground.get("/rooms", async (req, res) => {
