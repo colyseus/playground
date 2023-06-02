@@ -63,7 +63,7 @@ export function Playground() {
 
 	// get room name / room count
 	const fetchRoomStats = () => {
-		fetch(`${endpoint}/playground/rooms`).
+		fetch(`${endpoint}/rooms`).
 			then((response) => response.json()).
 			then((stats) => {
 				setServerState(ServerState.CONNECTED);
