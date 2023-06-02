@@ -1,6 +1,8 @@
 # Colyseus Playground
 
-Client-side connection playground for your Colyseus server. See [documentation](https://docs.colyseus.io/tools/playground/).
+Client-side connection playground for your Colyseus server.
+
+![](./screenshot.png)
 
 ## Contributing
 
