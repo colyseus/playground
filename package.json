@@ -1,6 +1,6 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "dependencies": {
     "@colyseus/core": "^0.15.0"
   },
@@ -12,10 +12,10 @@
   "typings": "./build/index.d.ts",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "PUBLIC_URL='.' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepublishOnly": "node build.mjs"
+    "prepublishOnly": "node build.mjs && npm run build"
   },
   "files": ["build", "README.md", "LICENSE", "screenshot.png"],
   "eslintConfig": {
