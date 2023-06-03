@@ -121,7 +121,6 @@ export function JoinRoomForm ({
 
 		// raw events from SDK
 		room.onMessage(RAW_EVENTS_KEY, (data: any[]) => {
-			// FIXME: React is not updating the view when pushing to array
 			connection.events.unshift({
 				eventType: data[0],
 				type: data[1],
