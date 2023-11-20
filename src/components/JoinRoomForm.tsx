@@ -92,8 +92,9 @@ export function JoinRoomForm ({
 
 		// skip if reconnecting on devMode (previous room events are successfuly re-used.)
 		// when using .reconnect() events need to be bound again
-		if (existingConnection && !needRebindEvents) {
-			return;
+		if (existingConnection) {
+			if (!needRebindEvents) { return; }
+			existingConnection.isConnected = true;
 		}
 
 		// get existing Connection for sessionId, or create a new one

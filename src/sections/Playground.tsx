@@ -27,7 +27,7 @@ export function Playground() {
 		if (global.connections.indexOf(connection) !== -1) {
 			// reconnected! (via devMode or .reconnect())
 			connection.isConnected = true;
-			setConnections(global.connections);
+			setConnections([...global.connections]);
 
 		} else {
 			// new connection

@@ -70,7 +70,7 @@ Room.prototype['onMessageCallback'] = function(event: MessageEvent) {
 
 function getEventType(code: number) {
   // TODO: fix nomenclature on SDK itself
-  let eventType = Protocol[code].replace("ROOM_", "");
+  let eventType = Protocol[code]?.replace("ROOM_", "");
   if (eventType === "DATA") {
     eventType = "MESSAGE";
   }

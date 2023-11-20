@@ -14,7 +14,7 @@ export function StateView({
 	const [state, setState] = useState(room.state && room.state.toJSON());
 	const hasState = (room.state !== null);
 
-	console.log("RENDER STATE VIEW (bind onStateChange)");
+	// console.log("RENDER STATE VIEW (bind onStateChange)");
 	room.onStateChange((state) => setState(state.toJSON()));
 
 	return <JsonView src={state} enableClipboard={false} />;
