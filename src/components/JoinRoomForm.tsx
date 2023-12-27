@@ -1,22 +1,26 @@
 import { Client, Room, RoomAvailable } from "colyseus.js";
-import { useEffect, useState } from "react";
-import { global, client, endpoint, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
+import { useState } from "react";
+import { global, client, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
 import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
 import { LimitedArray } from "../utils/LimitedArray";
 import { JSONEditor } from "../elements/JSONEditor";
 import * as JSONEditorModule from "jsoneditor";
 import { RoomWithId } from "../elements/RoomWithId";
+import { AuthOptions } from "./AuthOptions";
+import type { AuthConfig } from "../../src-backend/index";
 
 export function JoinRoomForm ({
 	roomNames,
 	roomsById,
 	roomsByType,
+	authConfig,
 	onConnectionSuccessful,
 	onDisconnection,
 } : {
 	roomNames: string[]
 	roomsById: { [key: string]: RoomAvailable & { locked: boolean } },
 	roomsByType: {[key: string]: number},
+	authConfig: AuthConfig,
 	onConnectionSuccessful: (connection: Connection) => void
 	onDisconnection: (sessionId: string) => void
 }) {
@@ -28,13 +32,8 @@ export function JoinRoomForm ({
 	const [error, setError] = useState("");
 	const [isButtonEnabled, setButtonEnabled] = useState(true);
 
-	// // auto-fetch room stats at every 5 seconds
-	// useEffect(() => {
-	// 	const fetchInterval = setInterval(fetchRoomStats, 5000);
-	// 	return () => clearInterval(fetchInterval);
-	// }, []);
-
-	const onChangeOptions = (json: any) => setOptionsJSON(json);
+	const [isAuthBlockOpen, setAuthBlockOpen] = useState(false);
+	const [authToken, setAuthToken] = useState(client.auth.token || "");
 
 	const handleSelectedRoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (selectedMethod === "joinById") {
@@ -59,11 +58,27 @@ export function JoinRoomForm ({
 		}
 	}
 
-	const handleOptionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-		setOptionsJSON(e.target.value);
+	const onChangeOptions = (json: any) =>
+		setOptionsJSON(json);
+
+	const onAuthTokenChange = (newToken: string, autoClose: boolean = true) => {
+		if (authToken !== newToken) {
+			client.auth.token = newToken;
+			setAuthToken(client.auth.token);
+
+			if (autoClose) {
+				setAuthBlockOpen(false);
+			}
+		}
+	};
+
+	const toggleAuthBlock = function(e: React.MouseEvent) {
+		e.preventDefault();
+		setAuthBlockOpen(!isAuthBlockOpen);
+	}
 
 	const onJoinClick = async () => {
-		const method = selectedMethod;
+		const method = selectedMethod as "joinById" | "reconnect" | "joinOrCreate" | "join";
 		const roomName = (method === "joinById") ? selectedRoomId : selectedRoomName;
 
 		setError(""); // clear previous error
@@ -249,6 +264,18 @@ export function JoinRoomForm ({
 					mainMenuBar={false}
 					className={"mt-2 h-24 overflow-hidden rounded border " + (isButtonEnabled ? "border-gray-300" : "border-red-300")}
 				/>
+
+				<p className="mt-4 cursor-pointer truncate overflow-hidden text-ellipsis" onClick={toggleAuthBlock}>
+					<span className={`caret inline-block transition-all ${(isAuthBlockOpen) ? "rotate-90" : "rotate-0"}`}>▶</span> <strong>Auth Token </strong><small className="text-xs text-slate-600">{authToken && `(${authToken.length} chars) "${authToken}"` || "(none)"}</small>
+				</p>
+
+				{(isAuthBlockOpen)
+					? <AuthOptions
+							authToken={authToken}
+							onAuthTokenChange={onAuthTokenChange}
+							authConfig={authConfig}
+							/>
+					: null }
 
 				<div className="flex mt-4">
 					<button

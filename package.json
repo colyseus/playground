@@ -1,8 +1,9 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.7",
+  "version": "0.15.8",
   "dependencies": {
-    "@colyseus/core": "^0.15.0"
+    "@colyseus/core": "^0.15.0",
+    "@colyseus/auth": "^0.15.0"
   },
   "peerDependencies": {
     "express": ">=4.16.0"

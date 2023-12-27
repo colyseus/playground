@@ -1,9 +1,16 @@
 import path from "path";
 import express from "express";
+import { auth, JWT } from "@colyseus/auth";
 import { matchMaker, RoomListingData } from '@colyseus/core';
 import { allRoomNames } from "./colyseus.ext";
 
 export const playground = express.Router();
+
+export type AuthConfig = {
+  oauth: string[],
+  register: boolean,
+  anonymous: boolean,
+};
 
 // serve static frontend
 playground.use("/", express.static(path.resolve(__dirname, "..", "build")));
@@ -23,7 +30,15 @@ playground.get("/rooms", async (req, res) => {
 
   res.json({
     rooms: allRoomNames,
+
     roomsByType,
-    roomsById
+    roomsById,
+
+    auth: {
+      // list of OAuth providers
+      oauth: Object.keys(auth.oauth.providers),
+      register: typeof(auth.settings.onRegisterWithEmailAndPassword) === "function",
+      anonymous: typeof(JWT.settings.secret) === "string",
+    } as AuthConfig
   });
 });

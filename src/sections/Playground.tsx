@@ -7,6 +7,8 @@ import { ConnectionList } from "../components/ConnectionList";
 import { JoinRoomForm } from "../components/JoinRoomForm";
 import { StateView } from "../components/StateView";
 
+import { AuthConfig } from "../../src-backend";
+
 enum ServerState {
 	CONNECTING = "connecting",
 	CONNECTED = "connected",
@@ -22,6 +24,7 @@ export function Playground() {
 	const [roomNames, setRoomNames] = useState([]);
 	const [roomsById, setRoomsById] = useState({} as { [key: string]: RoomAvailable & { locked: boolean } });
 	const [roomsByType, setRoomsByType] = useState({} as {[key: string]: number});
+	const [authConfig, setAuthConfig] = useState({} as AuthConfig);
 
 	const onConnectionSuccessful = (connection: Connection) => {
 		if (global.connections.indexOf(connection) !== -1) {
@@ -70,10 +73,11 @@ export function Playground() {
 				setRoomNames(stats.rooms);
 				setRoomsByType(stats.roomsByType);
 				setRoomsById(stats.roomsById);
+				setAuthConfig(stats.auth);
 			}).
 			catch((e) => {
 				setServerState(ServerState.OFFLINE);
-				console.error(e)
+				console.error(e);
 			});
 	}
 
@@ -102,6 +106,7 @@ export function Playground() {
 						roomsById={roomsById}
 						onConnectionSuccessful={onConnectionSuccessful}
 						onDisconnection={onDisconnection}
+						authConfig={authConfig}
 					/>}
 			</div>
 

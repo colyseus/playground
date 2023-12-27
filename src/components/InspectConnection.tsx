@@ -154,7 +154,8 @@ export function InspectConnection({
 						</p>
 					: <div className="flex items-center">
 							<div className="flex mt-2">
-								<select placeholder="Message type" className="border p-2 rounded" value={messageType} onChange={handleMessageTypeChange}>
+								<select className="border p-2 rounded" value={messageType} onChange={handleMessageTypeChange}>
+								<option disabled={true} value="">Message type</option>
 									{(messageTypes).map((type) => (
 										<option key={type} value={type}>{type}</option>
 									))}
