@@ -8,13 +8,13 @@ export type Connection = {
   events: LimitedArray;
 };
 
-// export const baseEndpoint = `${window.location.protocol}//${window.location.host}`;
-// export const endpoint = `${baseEndpoint}${window.location.pathname.replace(/\/+$/, '')}`;
+export const baseEndpoint = `${window.location.protocol}//${window.location.host}`;
+export const endpoint = `${baseEndpoint}${window.location.pathname.replace(/\/+$/, '')}`;
 
-// export const client = new Client(baseEndpoint);
+export const client = new Client(baseEndpoint);
 
-export const endpoint = "http://localhost:2567/playground";
-export const client = new Client("http://localhost:2567");
+// export const endpoint = "http://localhost:2567/playground";
+// export const client = new Client("http://localhost:2567");
 
 export const global = { connections: [] as Connection[], };
 
