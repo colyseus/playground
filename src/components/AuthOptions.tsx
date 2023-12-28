@@ -88,6 +88,7 @@ export function AuthOptions({
 
 	const onLogoutClick = async function(e: React.MouseEvent<HTMLButtonElement>) {
 		client.auth.signOut();
+		onAuthTokenChange("");
 	}
 
 	useEffect(() => {
