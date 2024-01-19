@@ -134,7 +134,7 @@ export function AuthOptions({
 							<hr className="my-4" />
 							<div>
 								<h2 className="font-semibold text-sm">OAuth 2.0 Provider</h2>
-								<div className="mt-2 gap-2">
+								<div className="mt-2 gap-2 flex flex-wrap">
 									{authConfig.oauth.map((provider) => (
 										<button
 											key={provider}
