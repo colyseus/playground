@@ -22,7 +22,7 @@ Room.prototype['connect'] = function(endpoint: string, devModeCloseCallback: () 
 
   // intercept send events
   const send = room.connection.transport['send'];
-  room.connection.transport['send'] = (data: ArrayBuffer) => {
+  room.connection.transport['send'] = (data: Uint8Array | Buffer) => {
     const sendBytes = Array.from(new Uint8Array(data));
 
     room['onMessageHandlers'].emit(RAW_EVENTS_KEY, ['out', getEventType(sendBytes[0]), sendBytes]);
