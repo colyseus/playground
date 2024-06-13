@@ -1,23 +1,33 @@
 import http from "http";
-import { Server, Room, Client, ClientState } from '@colyseus/core';
+import { Server, Room, Client, ClientState, ClientPrivate, spliceOne } from '@colyseus/core';
 
-const originalDefine = Server.prototype.define;
-export const allRoomNames: string[] = [];
+export let allRoomNames: string[] = [];
 
-const original_onJoin = Room.prototype._onJoin;
-
-Room.prototype._onJoin = async function(client: Client, req?: http.IncomingMessage) {
-  const result = await original_onJoin.apply(this, arguments);
-
-  if (client.state === ClientState.JOINING) {
-    client.send("__playground_message_types", Object.keys(this['onMessageHandlers']));
-  }
-
-  return result;
-}
-
+const define = Server.prototype.define;
 // @ts-ignore
 Server.prototype.define = function(name, handler, options) {
     allRoomNames.push(name);
-    return originalDefine.call(this, name, handler, options);
+    return define.call(this, name, handler, options);
 };
+
+const removeRoomType = Server.prototype.removeRoomType;
+Server.prototype.removeRoomType = function(name) {
+    const removeIndex = allRoomNames.findIndex((roomName) => roomName === name);
+    if (removeIndex !== -1) {
+        spliceOne(allRoomNames, removeIndex);
+    }
+    return removeRoomType.call(this, name);
+};
+
+export function applyMonkeyPatch() {
+  const _onJoin = Room.prototype._onJoin;
+  Room.prototype._onJoin = async function (client: Client & ClientPrivate, req?: http.IncomingMessage) {
+    const result = await _onJoin.apply(this, [client, req]);
+
+    if (client.state === ClientState.JOINING) {
+      client.send("__playground_message_types", Object.keys(this['onMessageHandlers']));
+    }
+
+    return result;
+  }
+}
