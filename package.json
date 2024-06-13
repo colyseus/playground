@@ -1,9 +1,9 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.16.0-preview.0",
+  "version": "0.16.0-preview.1",
   "dependencies": {
-    "@colyseus/core": "^0.16.0-preview.0",
-    "@colyseus/auth": "^0.16.0-preview.0"
+    "@colyseus/auth": "^0.16.0-preview.0",
+    "@colyseus/core": "^0.16.0-preview.0"
   },
   "peerDependencies": {
     "express": ">=4.16.0"
@@ -18,7 +18,12 @@
     "eject": "react-scripts eject",
     "prepublishOnly": "npm run build && node build.mjs"
   },
-  "files": ["build", "README.md", "LICENSE", "screenshot.png"],
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE",
+    "screenshot.png"
+  ],
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -46,7 +51,7 @@
     "@types/node": "^16.18.31",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "colyseus.js": "^0.16.0-preview.0",
+    "colyseus.js": "^0.16.0-preview.2",
     "esbuild": "^0.17.19",
     "fast-glob": "^3.2.12",
     "jsoneditor": "^9.10.2",
