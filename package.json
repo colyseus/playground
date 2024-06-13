@@ -1,9 +1,9 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.12",
+  "version": "0.16.0-preview.0",
   "dependencies": {
-    "@colyseus/core": "^0.15.0",
-    "@colyseus/auth": "^0.15.0"
+    "@colyseus/core": "^0.16.0-preview.0",
+    "@colyseus/auth": "^0.16.0-preview.0"
   },
   "peerDependencies": {
     "express": ">=4.16.0"
@@ -46,7 +46,7 @@
     "@types/node": "^16.18.31",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "colyseus.js": "^0.15.8",
+    "colyseus.js": "^0.16.0-preview.0",
     "esbuild": "^0.17.19",
     "fast-glob": "^3.2.12",
     "jsoneditor": "^9.10.2",
