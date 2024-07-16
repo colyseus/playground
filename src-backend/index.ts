@@ -20,7 +20,7 @@ export function playground(): Router {
 
   // expose matchmaking stats
   router.get("/rooms", async (req, res) => {
-    const rooms = await matchMaker.driver.find({});
+    const rooms = await matchMaker.driver.query({});
 
     const roomsByType: { [roomName: string]: number } = {};
     const roomsById: { [roomName: string]: RoomListingData } = {};
