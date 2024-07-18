@@ -67,9 +67,18 @@ async function main() {
     outdir,
     target,
     format: "esm",
+    bundle: true,
     sourcemap: "external",
     platform: "node",
-    outExtension: { '.js': '.mjs', }
+    outExtension: { '.js': '.mjs', },
+    plugins: [{
+      name: 'add-mjs',
+      setup(build) {
+        build.onResolve({ filter: /.*/ }, (args) => {
+          if (args.importer) return { path: args.path.replace(/^\.(.*)\.js$/, '.$1.mjs'), external: true }
+        })
+      },
+    }]
   });
 
   // emit .d.ts files

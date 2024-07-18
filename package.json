@@ -1,16 +1,15 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.16.0-preview.7",
-  "dependencies": {
-    "@colyseus/auth": "^0.16.0-preview.0",
-    "@colyseus/core": "^0.16.0-preview.0"
-  },
-  "peerDependencies": {
-    "express": ">=4.16.0"
-  },
+  "version": "0.16.0-preview.8",
   "main": "./build/index.js",
   "module": "./build/index.mjs",
   "typings": "./build/index.d.ts",
+    "exports": {
+    ".": {
+      "import": "./build/index.mjs",
+      "require": "./build/index.js"
+    }
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "PUBLIC_URL='.' react-scripts build",
@@ -24,6 +23,13 @@
     "LICENSE",
     "screenshot.png"
   ],
+  "dependencies": {
+    "@colyseus/auth": "^0.16.0-preview.0",
+    "@colyseus/core": "^0.16.0-preview.0"
+  },
+  "peerDependencies": {
+    "express": ">=4.16.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

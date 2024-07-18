@@ -1,8 +1,8 @@
-import path from "path";
-import express, { Router } from "express";
-import { auth, JWT } from "@colyseus/auth";
+import path from 'path';
+import express, { Router } from 'express';
+import { auth, JWT } from '@colyseus/auth';
 import { matchMaker, RoomListingData } from '@colyseus/core';
-import { allRoomNames, applyMonkeyPatch } from "./colyseus.ext";
+import { allRoomNames, applyMonkeyPatch } from './colyseus.ext.js';
 
 export type AuthConfig = {
   oauth: string[],
