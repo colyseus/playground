@@ -21,12 +21,12 @@ Room.prototype['connect'] = function(endpoint: string, devModeCloseCallback: () 
   (room as any)[RAW_EVENTS_KEY] = [];
 
   // intercept send events
-  const send = room.connection.transport['send'];
-  room.connection.transport['send'] = (data: Uint8Array | Buffer) => {
+  const send = room.connection['send'];
+  room.connection['send'] = (data: Uint8Array | Buffer) => {
     const sendBytes = Array.from(new Uint8Array(data));
 
     room['onMessageHandlers'].emit(RAW_EVENTS_KEY, ['out', getEventType(sendBytes[0]), sendBytes]);
-    send.call(room.connection.transport, data);
+    send.call(room.connection, data);
   };
 
   const events = room.connection.events;
