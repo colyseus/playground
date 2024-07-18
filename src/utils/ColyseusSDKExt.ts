@@ -29,17 +29,17 @@ Room.prototype['connect'] = function(endpoint: string, devModeCloseCallback: () 
     send.call(room.connection.transport, data);
   };
 
-  const ws = (room.connection.transport as any).ws;
+  const events = room.connection.events;
 
-  const onerror = ws.onerror;
-  ws.onerror = (error: any) => {
+  const onerror = events.onerror;
+  events.onerror = (error: any) => {
     room['onMessageHandlers'].emit(RAW_EVENTS_KEY, ['error', 'ERROR', error.message]);
-    onerror(error);
+    onerror?.(error);
   };
 
   // intercept close events
-  const onclose = ws.onclose;
-  ws.onclose = (event: any) => {
+  const onclose = events.onclose;
+  events.onclose = (event: any) => {
     delete (room as any)[RAW_EVENTS_KEY];
     if (event.code === 4010) {// CloseCode.DEVMODE_RESTART
       room['onMessageHandlers'].emit(DEVMODE_RESTART);
@@ -47,7 +47,7 @@ Room.prototype['connect'] = function(endpoint: string, devModeCloseCallback: () 
     } else {
       room['onMessageHandlers'].emit(RAW_EVENTS_KEY, ['close', 'CLOSE', { code: event.code }]);
     }
-    onclose(event);
+    onclose?.(event);
   };
 
   // expose room to playground app

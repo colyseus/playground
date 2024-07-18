@@ -25,7 +25,8 @@ export function applyMonkeyPatch() {
     const result = await _onJoin.apply(this, [client, req]);
 
     if (client.state === ClientState.JOINING) {
-      client.send("__playground_message_types", Object.keys(this['onMessageHandlers']));
+      const messageTypes = Object.keys(this['onMessageHandlers']).filter((type) => type.indexOf("__") !== 0)
+      client.send("__playground_message_types", messageTypes);
     }
 
     return result;

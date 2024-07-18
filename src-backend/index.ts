@@ -1,7 +1,8 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 import express, { Router } from 'express';
 import { auth, JWT } from '@colyseus/auth';
-import { matchMaker, RoomListingData } from '@colyseus/core';
+import { matchMaker, IRoomCache } from '@colyseus/core';
 import { allRoomNames, applyMonkeyPatch } from './colyseus.ext.js';
 
 export type AuthConfig = {
@@ -23,7 +24,7 @@ export function playground(): Router {
     const rooms = await matchMaker.driver.query({});
 
     const roomsByType: { [roomName: string]: number } = {};
-    const roomsById: { [roomName: string]: RoomListingData } = {};
+    const roomsById: { [roomName: string]: IRoomCache } = {};
 
     rooms.forEach((room) => {
       if (!roomsByType[room.name]) { roomsByType[room.name] = 0; }

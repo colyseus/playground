@@ -1,10 +1,10 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.16.0-preview.8",
+  "version": "0.16.0-preview.9",
   "main": "./build/index.js",
   "module": "./build/index.mjs",
   "typings": "./build/index.d.ts",
-    "exports": {
+  "exports": {
     ".": {
       "import": "./build/index.mjs",
       "require": "./build/index.js"
@@ -12,10 +12,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "PUBLIC_URL='.' react-scripts build",
+    "build": "PUBLIC_URL='.' react-scripts build && node build.mjs",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepublishOnly": "npm run build && node build.mjs"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "build",
@@ -57,7 +57,7 @@
     "@types/node": "^16.18.31",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "colyseus.js": "^0.16.0-preview.2",
+    "colyseus.js": "^0.16.0-preview.15",
     "esbuild": "^0.17.19",
     "fast-glob": "^3.2.12",
     "jsoneditor": "^9.10.2",
