@@ -1,6 +1,6 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.16.0-preview.11",
+  "version": "0.16.0-preview.12",
   "main": "./build/index.js",
   "module": "./build/index.mjs",
   "typings": "./build/index.d.ts",
@@ -57,7 +57,7 @@
     "@types/node": "^16.18.31",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "colyseus.js": "^0.16.0-preview.16",
+    "colyseus.js": "^0.16.0-preview.18",
     "esbuild": "^0.17.19",
     "fast-glob": "^3.2.12",
     "jsoneditor": "^9.10.2",
