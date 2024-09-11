@@ -37,7 +37,7 @@ function ConnectionItem({
 			? <span className="ml-2 font-semibold bg-green-500 text-white rounded px-1.5 p-1">↔</span>
 			: <span className="ml-2 font-semibold bg-red-500 text-white rounded px-1.5 p-1">🅧</span>}
 
-		<code className="ml-2 bg-gray-100 text-gray-700 p-1 rounded">sessionId: {connection.sessionId}</code>
+		<code className="ml-2 bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-gray-700 p-1 rounded">sessionId: {connection.sessionId}</code>
 	</div>
 }
 

@@ -96,7 +96,7 @@ export function Playground() {
 	return <>
 		<div className="grid grid-cols-2 gap-6">
 
-			<div className="bg-white shadow rounded p-6">
+			<div className="bg-white dark:bg-slate-700 shadow rounded p-6 dark:text-slate-300">
 				{(serverState === ServerState.CONNECTING) && <p>Connecting to server...</p>}
 				{(serverState === ServerState.OFFLINE) && <p>Server is offline.</p>}
 				{(serverState === ServerState.CONNECTED) &&
@@ -110,7 +110,7 @@ export function Playground() {
 					/>}
 			</div>
 
-			<div className="bg-white shadow rounded p-6">
+			<div className="bg-white dark:bg-slate-700 dark:text-slate-300 shadow rounded p-6">
 				<ConnectionList
 					connections={connections}
 					selectedConnection={selectedConnection}
@@ -122,13 +122,13 @@ export function Playground() {
 		</div>
 
 		{/*  gap-6 */}
-		<div className="mt-6 bg-white shadow rounded grid grid-cols-2 min-h-screen">
+		<div className="mt-6 bg-white dark:bg-slate-700 dark:text-slate-300 shadow rounded grid grid-cols-2 min-h-screen">
 
 			<div className="p-6">
 				<h2 className="text-xl font-semibold">
 					Inspect connection
 					{(selectedConnection)
-						? <span> (<code className="bg-gray-100 text-sm text-gray-700 p-1 rounded">sessionId: {selectedConnection.sessionId}</code>)</span>
+						? <span> (<code className="bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-sm text-gray-700 p-1 rounded">sessionId: {selectedConnection.sessionId}</code>)</span>
 						: null}
 
 				</h2>
@@ -141,7 +141,7 @@ export function Playground() {
 			</div>
 
 			<div className="p-6">
-				<h2 className="text-xl font-semibold mb-2">State</h2>
+				<h2 className="text-xl font-semibold mb-2 dark:text-slate-300">State</h2>
 				{(selectedConnection)
 					? <div className="text-sm">
 							<StateView key={selectedConnection.sessionId} connection={selectedConnection} />

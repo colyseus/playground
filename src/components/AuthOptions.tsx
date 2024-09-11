@@ -108,21 +108,21 @@ export function AuthOptions({
 					name="token"
 					value={authToken}
 					onChange={handleAuthTokenChange}
-					className={"w-full mt-2 p-2 border-r-0 overflow-hidden rounded-l text-ellipsis border border-gray-300"}
+					className={"w-full mt-2 p-2 border-r-0 overflow-hidden rounded-l text-ellipsis border border-gray-300 dark:border-slate-500 dark:bg-slate-800"}
 				/>
 				<button disabled={(authToken === "")} className="bg-red-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-red-700 text-white font-bold mt-2 py-1 px-3 rounded-r transition" onClick={onLogoutClick}>
 					Clear
 				</button>
 			</div>
 			{/* <hr className="my-4" /> */}
-			<div className="flex flex-col mt-2 bg-gray-100 rounded p-4">
+			<div className="flex flex-col mt-2 bg-gray-100 dark:bg-slate-600 rounded p-4">
 
 				{(authConfig.register)
 					? <div>
 							<h2 className="font-semibold text-sm">Email / Password</h2>
 							<form className="flex mt-2 gap-2 w-full" onSubmit={signInWithEmailAndPassword}>
-								<input onChange={handleEmailChange} type="text" name="email" placeholder="Email" className="flex-grow p-2 overflow-hidden rounded text-ellipsis border border-gray-300" />
-								<input onChange={handlePasswordChange} type="password" name="password" placeholder="Password" className="flex-grow p-2 overflow-hidden rounded text-ellipsis border border-gray-300" />
+								<input onChange={handleEmailChange} type="text" name="email" placeholder="Email" className="flex-grow p-2 overflow-hidden rounded text-ellipsis border border-gray-300 dark:border-slate-500 dark:bg-slate-800" />
+								<input onChange={handlePasswordChange} type="password" name="password" placeholder="Password" className="flex-grow p-2 overflow-hidden rounded text-ellipsis border border-gray-300 dark:border-slate-500 dark:bg-slate-800" />
 								<button className="bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition" onClick={signInWithEmailAndPassword} disabled={emailAndPasswordLoading}>Sign-in</button>
 							</form>
 							{(emailAndPasswordError) && <div className="mt-2 bg-red-100 rounded p-2 text-red-900 text-xs">{emailAndPasswordError}</div>}

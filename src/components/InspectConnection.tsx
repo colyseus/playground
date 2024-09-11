@@ -154,7 +154,7 @@ export function InspectConnection({
 						</p>
 					: <div className="flex items-center">
 							<div className="flex mt-2">
-								<select className="border p-2 rounded" value={messageType} onChange={handleMessageTypeChange}>
+								<select className="border p-2 rounded dark:bg-slate-800 dark:text-slate-300 dark:border-slate-500" value={messageType} onChange={handleMessageTypeChange}>
 								<option disabled={true} value="">Message type</option>
 									{(messageTypes).map((type) => (
 										<option key={type} value={type}>{type}</option>
@@ -173,7 +173,7 @@ export function InspectConnection({
 									statusBar={false}
 									navigationBar={false}
 									mainMenuBar={false}
-									className={"h-10 overflow-hidden rounded border " + (isSendMessageEnabled ? "border-gray-300" : "border-red-300")}
+									className={"h-10 overflow-hidden rounded border " + (isSendMessageEnabled ? "border-gray-300 dark:border-slate-500" : "border-red-300")}
 								/>
 							</div>
 
@@ -195,7 +195,7 @@ export function InspectConnection({
 							<button
 								onClick={handleSelectTab}
 								value={tab}
-								className={((selectedTab === tab) ? "text-purple-600 border-purple-600 " : "") + "inline-flex p-4 border-b-2 rounded-t-lg active group"}
+								className={((selectedTab === tab) ? "dark:text-purple-600 text-purple-600 border-purple-600 " : "") + "inline-flex p-4 border-b-2 rounded-t-lg active group dark:text-slate-300"}
 								aria-current="page">
 								{tabs[tab].icon}
 								{tabs[tab].label}
@@ -226,7 +226,7 @@ export function InspectConnection({
 								</tr>}
 
 							{(messages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
-								<tr key={i + '-' + message.now} className={"border-b " + (message.in ? "bg-red-100" : "bg-green-100")}>
+								<tr key={i + '-' + message.now} className={"border-b " + (message.in ? "bg-red-100 dark:bg-red-300 dark:text-slate-800" : "bg-green-100 dark:bg-green-300 dark:text-slate-800")}>
 									<td className="p-2">
 										{message.in &&
 											<span className="inline text-red-600 text-base">↓</span>}
@@ -236,7 +236,7 @@ export function InspectConnection({
 									</td>
 
 									<td className="p-2 border-r text-left">
-										<code className="ml-2 bg-gray-100 p-1 rounded">"{message.type}"</code>
+										<code className="ml-2 bg-gray-100 p-1 rounded dark:bg-slate-800 dark:text-slate-300">"{message.type}"</code>
 									</td>
 
 									<td className="p-2 border-r text-left">

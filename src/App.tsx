@@ -6,6 +6,7 @@ import Logo from "./favicon.svg";
 
 import { Home } from './sections/Home';
 import { Playground } from './sections/Playground';
+import {DarkModeToggle} from "./components/DarkModeToggle";
 
 const routes = [
   {
@@ -46,14 +47,18 @@ export default function App() {
         {/* Content */}
         <div className="flex-1 flex flex-col">
 
-          <div className="flex-1 overflow-y-auto bg-gray-100">
+          <div className="flex-1 overflow-y-auto bg-gray-100 dark:bg-slate-800">
             <div className="container mx-auto p-8">
+
+              <div className="text-right">
+                <DarkModeToggle/>
+              </div>
 
               <div className="flex mt-4 justify-center">
                 <img src={Logo} alt="" className="w-8 mr-2" />
-                <h1 className="text-3xl"><span className="font-semibold">Colyseus</span> <span className="font-extralight">Playground</span></h1>
+                <h1 className="text-3xl dark:text-slate-300"><span className="font-semibold">Colyseus</span> <span className="font-extralight">Playground</span></h1>
               </div>
-              <p className="mt-0.5 mb-8 text-center text-gray-700 text-sm font-light italic">(For client-side connection inspection.)</p>
+              <p className="mt-0.5 mb-8 text-center text-gray-700 text-sm font-light italic dark:text-slate-400">(For client-side connection inspection.)</p>
 
               <Routes>
                 {routes.map((route, index) => (
@@ -65,7 +70,7 @@ export default function App() {
                 ))}
               </Routes>
 
-              <p className="mt-8 text-center text-gray-700 text-sm font-light italic">
+              <p className="mt-8 text-center text-gray-700 text-sm font-light italic dark:text-slate-300">
                   <a href="https://github.com/colyseus/playground" className="text-purple-700 hover:text-purple-500" target="_blank">This playground tool is open-source</a>, and was made with React and TailwindCSS. <br />
                   Contributions are welcome!
               </p>
