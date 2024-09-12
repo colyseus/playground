@@ -187,7 +187,7 @@ export function InspectConnection({
 
 			</div>
 
-			<div className="border-b border-gray-200">
+			<div className="border-b border-gray-200 dark:border-slate-500">
 				<ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500">
 
 					{(Object.keys(tabs) as InspectTab[]).map((tab) => (
@@ -209,24 +209,24 @@ export function InspectConnection({
 			{/* Messages */}
 			<div className="mt-4">
 				{(selectedTab === InspectTab.MESSAGES) &&
-					<table className="table-auto w-full border-collapse text-center text-xs border-t border-l border-r">
+					<table className="table-auto w-full border-collapse text-center text-xs border-t border-l border-r dark:border-slate-500">
 						<thead>
-							<tr className="border-b">
-								<th colSpan={2} className="p-3 border-r">Type</th>
-								<th className="p-3 w-full border-r">Payload</th>
-								<th className="p-3 w-full">Time</th>
+							<tr className="border-b dark:border-slate-500">
+								<th colSpan={2} className="p-3 border-r dark:border-slate-500">Type</th>
+								<th className="p-3 w-full border-r dark:border-slate-500">Payload</th>
+								<th className="p-3 w-full dark:border-slate-500">Time</th>
 							</tr>
 						</thead>
 
 						<tbody>
 
 							{(messages.length === 0) &&
-								<tr className={"p-2 border-b"}>
+								<tr className={"p-2 border-b dark:border-slate-500"}>
 									<td colSpan={3} className="p-2">No messages</td>
 								</tr>}
 
 							{(messages).slice(0, MAX_TABLE_ROWS).map((message, i) => (
-								<tr key={i + '-' + message.now} className={"border-b " + (message.in ? "bg-red-100 dark:bg-red-300 dark:text-slate-800" : "bg-green-100 dark:bg-green-300 dark:text-slate-800")}>
+								<tr key={i + '-' + message.now} className={"border-b dark:border-slate-500 dark:text-slate-800 " + (message.in ? "bg-red-100 dark:bg-red-300" : "bg-green-100 dark:bg-green-300")}>
 									<td className="p-2">
 										{message.in &&
 											<span className="inline text-red-600 text-base">↓</span>}
@@ -235,11 +235,11 @@ export function InspectConnection({
 											<span className="inline text-green-600 text-base">↑</span>}
 									</td>
 
-									<td className="p-2 border-r text-left">
+									<td className="p-2 border-r text-left dark:border-slate-500">
 										<code className="ml-2 bg-gray-100 p-1 rounded dark:bg-slate-800 dark:text-slate-300">"{message.type}"</code>
 									</td>
 
-									<td className="p-2 border-r text-left">
+									<td className="p-2 border-r text-left dark:border-slate-500">
 										<div className="truncate w-80 ">
 											<code>{JSON.stringify(message.message)}</code>
 										</div>
@@ -256,28 +256,28 @@ export function InspectConnection({
 
 				{/* Events */}
 				{(selectedTab === InspectTab.RAW) &&
-					<div><table className="table-auto w-full border-collapse text-center text-xs border-t border-l border-r">
+					<div><table className="table-auto w-full border-collapse text-center text-xs border-t border-l border-r dark:border-slate-500">
 						<thead>
 							<tr className="border-b">
-								<th colSpan={2} className="p-3 border-r">Event</th>
-								<th className="p-3 w-full border-r">Raw</th>
+								<th colSpan={2} className="p-3 border-r dark:border-slate-500">Event</th>
+								<th className="p-3 w-full border-r dark:border-slate-500">Raw</th>
 								<th className="p-3">Time</th>
 							</tr>
 						</thead>
 
 						<tbody>
 							{(events.length === 0) &&
-								<tr className={"p-2 border-b"}>
+								<tr className={"p-2 border-b dark:border-slate-500"}>
 									<td colSpan={3} className="p-2">No events</td>
 								</tr>}
 
 							{(events).slice(0, MAX_TABLE_ROWS).map((event, i) => (
-								<tr key={i + '-' + event.now} className={"border-b " + (
+								<tr key={i + '-' + event.now} className={"border-b dark:border-slate-500 dark:text-slate-800 " + (
 									(event.eventType === "close" || event.eventType === "error")
 										? "bg-yellow-100"
 										: (event.eventType === "in")
-											? "bg-red-100"
-											: "bg-green-100"
+											? "bg-red-100 dark:bg-red-300"
+											: "bg-green-100 dark:bg-green-300"
 								)}>
 									<td className="p-2">
 
@@ -289,11 +289,11 @@ export function InspectConnection({
 
 									</td>
 
-									<td className="p-2 border-r text-left">
-										<code className="ml-2 bg-gray-100 p-1 rounded">"{event.type}"</code>
+									<td className="p-2 border-r text-left dark:border-slate-500">
+										<code className="ml-2 bg-gray-100 p-1 rounded dark:bg-slate-800 dark:text-slate-300">"{event.type}"</code>
 									</td>
 
-									<td className="p-2 border-r text-left">
+									<td className="p-2 border-r text-left dark:border-slate-500">
 										<div className="truncate w-60 overflow-hidden text-ellipsis">
 											{(Array.isArray(event.message))
 												? <code className="italic">({event.message.length} bytes) {JSON.stringify(event.message)}</code>

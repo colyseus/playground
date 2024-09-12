@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
+// System check
+const isDarkModeEnabled = (
+  localStorage.getItem('theme')
+    ? localStorage.getItem('theme') === 'dark'
+    : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+);
+
 export function DarkModeToggle () {
-    const [darkMode, setDarkMode] = useState(
-        () => localStorage.getItem('theme') === 'dark'
-    );
+    const [darkMode, setDarkMode] = useState(isDarkModeEnabled);
 
     useEffect(() => {
         if (darkMode) {

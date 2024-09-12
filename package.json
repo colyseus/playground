@@ -1,6 +1,6 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.12",
+  "version": "0.15.13",
   "dependencies": {
     "@colyseus/core": "^0.15.0",
     "@colyseus/auth": "^0.15.0"
