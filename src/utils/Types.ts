@@ -11,10 +11,10 @@ export type Connection = {
 export const baseEndpoint = `${window.location.protocol}//${window.location.host}`;
 export const endpoint = `${baseEndpoint}${window.location.pathname.replace(/\/+$/, '')}`;
 
-export const client = new Client(baseEndpoint);
+const prefixPathMatch = window.location.pathname.match(/\/([^/]+)\/playground/);
+const prefixPath = prefixPathMatch ? `/${prefixPathMatch[1]}` : '';
 
-// export const endpoint = "http://localhost:2567/playground";
-// export const client = new Client("http://localhost:2567");
+export const client = new Client(baseEndpoint + prefixPath);
 
 export const global = { connections: [] as Connection[], };
 
