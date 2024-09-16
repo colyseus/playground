@@ -101,7 +101,7 @@ export function AuthOptions({
 	}, []);
 
 	return (
-		<div className="border-b pb-4">
+		<div className="border-b pb-4 border-gray-300 dark:border-slate-500">
 			<div className="flex">
 				<input
 					type="text"

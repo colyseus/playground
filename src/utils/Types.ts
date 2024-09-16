@@ -13,9 +13,6 @@ export const endpoint = `${baseEndpoint}${window.location.pathname.replace(/\/+$
 
 export const client = new Client(baseEndpoint);
 
-// export const endpoint = "http://localhost:2567/playground";
-// export const client = new Client("http://localhost:2567");
-
 export const global = { connections: [] as Connection[], };
 
 export const roomsBySessionId: { [sessionId: string]: Room } = {};
