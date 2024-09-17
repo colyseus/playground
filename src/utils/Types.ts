@@ -1,4 +1,5 @@
 import { Client, Room } from "colyseus.js";
+import { MessageSchemasByRoom } from "../interfaces/SchemasByRoom";
 import { LimitedArray } from "./LimitedArray";
 
 export type Connection = {
@@ -17,6 +18,7 @@ export const global = { connections: [] as Connection[], };
 
 export const roomsBySessionId: { [sessionId: string]: Room } = {};
 export const messageTypesByRoom: { [key: string]: string[] } = {};
+export const messageSchemasByRoom: MessageSchemasByRoom = {}
 
 let currentColor = -1;
 export const allRoomColors: string[] = [

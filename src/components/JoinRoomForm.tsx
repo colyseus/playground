@@ -1,6 +1,6 @@
 import { Client, Room, RoomAvailable } from "colyseus.js";
 import { useState } from "react";
-import { global, client, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass } from "../utils/Types";
+import { global, client, roomsBySessionId, messageTypesByRoom, Connection, matchmakeMethods, getRoomColorClass, messageSchemasByRoom } from "../utils/Types";
 import { DEVMODE_RESTART, RAW_EVENTS_KEY, onRoomConnected } from "../utils/ColyseusSDKExt";
 import { LimitedArray } from "../utils/LimitedArray";
 import { JSONEditor } from "../elements/JSONEditor";
@@ -8,6 +8,7 @@ import * as JSONEditorModule from "jsoneditor";
 import { RoomWithId } from "../elements/RoomWithId";
 import { AuthOptions } from "./AuthOptions";
 import type { AuthConfig } from "../../src-backend/index";
+import { MessageType } from "../enums/room/MessageType";
 
 export function JoinRoomForm ({
 	roomNames,
@@ -144,6 +145,11 @@ export function JoinRoomForm ({
 				now: new Date(),
 			});
 		});
+
+        room.onMessage(MessageType.COLLECT_MESSAGE_SCHEMAS, (messageSchemas) => {
+            // Store the message schemas information
+            messageSchemasByRoom[room.name] = messageSchemas;
+        })
 
 		room.onLeave((code) =>
 			onDisconnection(room.sessionId));
