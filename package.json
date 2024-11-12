@@ -1,11 +1,10 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.14",
-  "dependencies": {
-    "@colyseus/core": "^0.15.0",
-    "@colyseus/auth": "^0.15.0"
-  },
+  "version": "0.15.15",
+  "dependencies": {},
   "peerDependencies": {
+    "@colyseus/core": "0.15.x",
+    "@colyseus/auth": "0.15.x",
     "express": ">=4.16.0"
   },
   "main": "./build/index.js",
