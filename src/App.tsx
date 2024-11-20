@@ -6,6 +6,7 @@ import Logo from "./favicon.svg";
 
 import { Home } from './sections/Home';
 import { Playground } from './sections/Playground';
+import { Client } from 'colyseus.js';
 
 const routes = [
   {
@@ -51,9 +52,13 @@ export default function App() {
 
               <div className="flex mt-4 justify-center">
                 <img src={Logo} alt="" className="w-8 mr-2" />
-                <h1 className="text-3xl"><span className="font-semibold">Colyseus</span> <span className="font-extralight">Playground</span></h1>
+                <h1 className="text-3xl">
+                  <span className="font-semibold">Colyseus</span> <span className="font-extralight">Playground</span>
+                </h1>
               </div>
-              <p className="mt-0.5 mb-8 text-center text-gray-700 text-sm font-light italic">(For client-side connection inspection.)</p>
+              <p className="mt-0.5 mb-8 text-center text-gray-700 text-sm font-light italic">
+                (For client-side connection inspection.)
+              </p>
 
               <Routes>
                 {routes.map((route, index) => (
