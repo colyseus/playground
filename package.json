@@ -1,6 +1,6 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.16",
+  "version": "0.15.17",
   "dependencies": {},
   "peerDependencies": {
     "@colyseus/core": "0.15.x",
