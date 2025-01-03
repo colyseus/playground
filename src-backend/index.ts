@@ -4,7 +4,7 @@ import { auth, JWT } from "@colyseus/auth";
 import { matchMaker, RoomListingData } from '@colyseus/core';
 import { allRoomNames } from "./colyseus.ext";
 
-export const playground = express.Router();
+export const playground: express.Router = express.Router();
 
 export type AuthConfig = {
   oauth: string[],
