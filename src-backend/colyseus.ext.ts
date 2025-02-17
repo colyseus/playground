@@ -1,5 +1,5 @@
 import http from "http";
-import { Server, Room, Client, ClientState, ClientPrivate, spliceOne } from '@colyseus/core';
+import { Server, Room, Client, ClientState, ClientPrivate, spliceOne, AuthContext } from '@colyseus/core';
 
 export let allRoomNames: string[] = [];
 
@@ -21,8 +21,8 @@ Server.prototype.removeRoomType = function(name) {
 
 export function applyMonkeyPatch() {
   const _onJoin = Room.prototype._onJoin;
-  Room.prototype._onJoin = async function (client: Client & ClientPrivate, req?: http.IncomingMessage) {
-    const result = await _onJoin.apply(this, [client, req]);
+  Room.prototype._onJoin = async function (client: Client & ClientPrivate, authContext: AuthContext) {
+    const result = await _onJoin.apply(this, [client, authContext]);
 
     if (client.state === ClientState.JOINING) {
       const messageTypes = Object.keys(this['onMessageHandlers']).filter((type) => type.indexOf("__") !== 0)

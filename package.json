@@ -56,7 +56,7 @@
     "@types/node": "^16.18.31",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "colyseus.js": "^0.16.0-preview.23",
+    "colyseus.js": "^0.16.0",
     "esbuild": "^0.17.19",
     "fast-glob": "^3.2.12",
     "jsoneditor": "^9.10.2",
