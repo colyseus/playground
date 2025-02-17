@@ -6,7 +6,7 @@ import Logo from "./favicon.svg";
 
 import { Home } from './sections/Home';
 import { Playground } from './sections/Playground';
-import {DarkModeToggle} from "./components/DarkModeToggle";
+import { DarkModeToggle } from "./components/DarkModeToggle";
 
 const routes = [
   {
@@ -58,7 +58,9 @@ export default function App() {
                 <img src={Logo} alt="" className="w-8 mr-2" />
                 <h1 className="text-3xl dark:text-slate-300"><span className="font-semibold">Colyseus</span> <span className="font-extralight">Playground</span></h1>
               </div>
-              <p className="mt-0.5 mb-8 text-center text-gray-700 text-sm font-light italic dark:text-slate-400">(For client-side connection inspection.)</p>
+              <p className="mt-0.5 mb-8 text-center text-gray-700 text-sm font-light italic">
+                (For client-side connection inspection.)
+              </p>
 
               <Routes>
                 {routes.map((route, index) => (

@@ -1,6 +1,4 @@
-import { Client, Room } from "colyseus.js";
-import { useEffect, useState } from "react";
-import { Connection, allRoomColors, getRoomColorClass, global, roomsBySessionId } from "../utils/Types";
+import { Connection, roomsBySessionId } from "../utils/Types";
 import { RoomWithId } from "../elements/RoomWithId";
 
 function ConnectionItem({
@@ -67,7 +65,7 @@ export function ConnectionList({
 
 	return (<>
 		<h2 className="text-xl font-semibold mb-2">
-			Client connections
+			Client connections ({connections.filter(c => c.isConnected).length})
 
 			{(connections.length > 0)
 				? <button className="float-right text-sm bg-red-500 enabled:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-4 py-1 rounded" onClick={handleLeaveAll}>

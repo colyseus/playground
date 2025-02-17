@@ -1,23 +1,34 @@
 {
   "name": "@colyseus/playground",
-  "version": "0.15.17",
-  "dependencies": {},
-  "peerDependencies": {
-    "@colyseus/core": "0.15.x",
-    "@colyseus/auth": "0.15.x",
-    "express": ">=4.16.0"
-  },
+  "version": "0.16.0",
   "main": "./build/index.js",
   "module": "./build/index.mjs",
   "typings": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./build/index.mjs",
+      "require": "./build/index.js"
+    }
+  },
   "scripts": {
     "start": "react-scripts start",
-    "build": "PUBLIC_URL='.' react-scripts build",
+    "build": "PUBLIC_URL='.' react-scripts build && node build.mjs",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepublishOnly": "npm run build && node build.mjs"
+    "prepublishOnly": "npm run build"
   },
-  "files": ["build", "README.md", "LICENSE", "screenshot.png"],
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE",
+    "screenshot.png"
+  ],
+  "dependencies": {},
+  "peerDependencies": {
+    "@colyseus/core": "0.16.x",
+    "@colyseus/auth": "0.16.x",
+    "express": ">=4.16.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -45,7 +56,7 @@
     "@types/node": "^16.18.31",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "colyseus.js": "^0.15.8",
+    "colyseus.js": "^0.16.0-preview.23",
     "esbuild": "^0.17.19",
     "fast-glob": "^3.2.12",
     "jsoneditor": "^9.10.2",
