@@ -3,6 +3,7 @@ import express, { Router } from 'express';
 import { auth, JWT } from '@colyseus/auth';
 import { matchMaker, IRoomCache } from '@colyseus/core';
 import { allRoomNames, applyMonkeyPatch } from './colyseus.ext.js';
+import { fileURLToPath } from 'url'; // required for ESM build (see build.mjs)
 
 export type AuthConfig = {
   oauth: string[],
