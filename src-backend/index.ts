@@ -33,7 +33,7 @@ export function playground(): Router {
     });
 
     res.json({
-      rooms: allRoomNames,
+      rooms: Object.keys(matchMaker.getAllHandlers()),
 
       roomsByType,
       roomsById,
